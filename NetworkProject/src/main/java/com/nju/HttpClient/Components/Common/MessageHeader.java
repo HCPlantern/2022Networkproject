@@ -31,4 +31,8 @@ public class MessageHeader {
         }
         return messageHeader.toString();
     }
+    public byte[] toBytes(){
+        String header=toString();
+        return header.getBytes();
+    }
 }

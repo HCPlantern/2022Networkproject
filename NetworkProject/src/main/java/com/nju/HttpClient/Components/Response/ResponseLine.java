@@ -17,4 +17,7 @@ public class ResponseLine {
     public String toString(){
         return version+" "+statusCode+" "+reasonPhrase+"\r\n";
     }
+    public byte[] toBytes(){
+        return null;
+    }
 }

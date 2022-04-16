@@ -28,5 +28,8 @@ public class MessageEntityBody {
             return "The message entity body is not supported to show here!";
         }
     }
+    public byte[] toBytes(){
+        return body;
+    }
 }
 

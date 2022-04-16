@@ -31,18 +31,20 @@ public class Client {
         this.redirectResourceCache=new RedirectResourceCache(new HashMap<>());
         this.clientSocket=new Socket(hostname,port);
         this.requestHandler=new RequestHandler(lastModifiedResourceCache,redirectResourceCache);
-        this.responseHandler=new ResponseHandler(lastModifiedResourceCache,redirectResourceCache);
-        this.clientInputStream=clientSocket.getInputStream();
-        this.clientOutputStream=clientSocket.getOutputStream();
+        this.responseHandler=new ResponseHandler(lastModifiedResourceCache,redirectResourceCache,this);
     }
 //发出请求报文
     public HttpResponse sendRequest(HttpRequest requestMessage){
         HttpResponse httpResponse =null;
         try {
-
-
-
-
+//            向服务端发送请求报文
+            clientOutputStream=clientSocket.getOutputStream();
+//            首先要重构一下
+            requestMessage=requestHandler.handle(requestMessage);
+            clientOutputStream.write(requestMessage.toBytes());
+//            得到来自服务端的响应报文
+            clientInputStream=clientSocket.getInputStream();
+            httpResponse=responseHandler.handle(requestMessage,clientInputStream);
         }catch (Exception e){
             e.printStackTrace();
         }

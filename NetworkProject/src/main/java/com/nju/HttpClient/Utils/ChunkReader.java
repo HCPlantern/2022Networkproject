@@ -4,7 +4,7 @@ package com.nju.HttpClient.Utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-
+//
 public class ChunkReader {
 //  对于响应报文的数据部分是分块编码时的读入
 //  参数是一个输入流 注意此时输入流已经到了数据部分 前面的请求行和首部已经被读了

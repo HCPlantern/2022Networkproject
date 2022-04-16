@@ -22,4 +22,8 @@ public class HttpResponse {
         responseMessage.append(responseLine.toString()).append(responseHeader.toString()).append("\r\n").append(responseEntityBody.toString(responseHeader.getFieldValue(HeaderFields.Content_Type)));
         return responseMessage.toString();
     }
+
+    public byte[] toBytes(){
+        return null;
+    }
 }

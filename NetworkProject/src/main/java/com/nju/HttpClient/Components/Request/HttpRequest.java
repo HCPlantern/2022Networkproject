@@ -23,5 +23,8 @@ public class HttpRequest {
         return null;
     }
 
+    public byte[] toBytes(){
+        return null;
+    }
 }
 
