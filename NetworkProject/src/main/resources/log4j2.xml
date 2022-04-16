@@ -20,10 +20,6 @@
         <File name="log" fileName="${logFilePath}/${logFileName}" append="false">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n"/>
         </File>
-        <!--SMTP :邮件发送日志-->
-        <SMTP name="Mail" subject="****SaaS系统正式版异常信息" to="message@message.info" from="message@lengjing.info" smtpUsername="message@message.info" smtpPassword="LENG****1234" smtpHost="mail.lengjing.info" smtpDebug="false" smtpPort="25" bufferSize="10">
-            <PatternLayout pattern="[%-5p]:%d{YYYY-MM-dd HH:mm:ss} [%t] %c{1}:%L - %msg%n" />
-        </SMTP>
         <!-- ${sys:user.home} :项目路径 -->
         <RollingFile name="RollingFileInfo" fileName="${sys:user.home}/logs/info.log"
                      filePattern="${sys:user.home}/logs/$${date:yyyy-MM}/info-%d{yyyy-MM-dd}-%i.log">

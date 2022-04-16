@@ -37,7 +37,7 @@ public class RequestHandler implements CompletionHandler<Integer //声明read操
         try {
             //以UTF-8解码channel读出的字节
             String strMsg = new String(byteMsg, "UTF-8");
-            logger.info("服务器收到消息：\n" + strMsg);
+            logger.info("服务器收到请求:" + System.lineSeparator() + strMsg);
 
             try {
                 if (isTimeout) {
@@ -131,10 +131,9 @@ public class RequestHandler implements CompletionHandler<Integer //声明read操
                         if (buffer.hasRemaining()) {
                             channel.write(buffer, buffer, this);
                         } else {
-                            //异步读，
+                            //写完了，异步读，
                             ByteBuffer allocate = ByteBuffer.allocate(1024);
                             buffer.clear();
-                            //也可以直接传入attachment
                             channel.read(allocate, allocate, new RequestHandler(channel));
                         }
                     }
