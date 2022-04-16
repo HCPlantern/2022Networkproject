@@ -1,14 +1,18 @@
 package com.nju.HttpServer.Handler;
 
+import com.nju.HttpServer.SimpleServer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 
 public class AcceptHandler implements CompletionHandler<AsynchronousSocketChannel, ServerHandler> {
+    private static Logger logger = LogManager.getLogger(AcceptHandler.class);
     @Override
     public void completed(AsynchronousSocketChannel channel, ServerHandler serverHandler) {
         try {
-            System.out.println("建立连接:" + channel.getRemoteAddress().toString());
+            logger.info("建立连接:" + channel.getRemoteAddress().toString());
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -7,6 +7,8 @@ import com.nju.HttpServer.Http.Util;
 import com.nju.HttpServer.RequestExecutor.BasicExecutor;
 import com.nju.HttpServer.RequestExecutor.StaticResourceHandler;
 import com.nju.HttpServer.SimpleServer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -17,6 +19,7 @@ import java.util.TimerTask;
 public class RequestHandler implements CompletionHandler<Integer //声明read操作返回的类型（读数据个数）
         , ByteBuffer> {//调用读操作传入的类型，针对read函数第一个buffer
     //用户读取信息或者发送信息的channel
+    private static Logger logger = LogManager.getLogger(RequestHandler.class);
     private AsynchronousSocketChannel channel;
     boolean isTimeout = false;
     public static TimerTask timerTask = null;
@@ -34,7 +37,7 @@ public class RequestHandler implements CompletionHandler<Integer //声明read操
         try {
             //以UTF-8解码channel读出的字节
             String strMsg = new String(byteMsg, "UTF-8");
-            System.out.println("服务器收到消息：\n" + strMsg);
+            logger.info("服务器收到消息：\n" + strMsg);
 
             try {
                 if (isTimeout) {
@@ -44,8 +47,9 @@ public class RequestHandler implements CompletionHandler<Integer //声明read操
                 // 把channel里转化出的字符串包装成Request
                 HttpRequest request = Util.String2Request(strMsg);
 
+                //Todo:keep-alive的处理
                 if (request.getHeaders().getValue("Keep-Alive") != null) {
-                    System.err.println("Keep-Alive");
+                    logger.debug("Keep-Alive");
                     String timeout = request.getHeaders().getValue("Keep-Alive");
                     if (timerTask != null) {
                         timerTask.cancel();
@@ -144,7 +148,7 @@ public class RequestHandler implements CompletionHandler<Integer //声明read操
 
     @Override
     public void failed(Throwable exc, ByteBuffer attachment) {
-        System.err.println("读写失败");
+        logger.error("读写失败");
         exc.printStackTrace();
         try {
             channel.close();

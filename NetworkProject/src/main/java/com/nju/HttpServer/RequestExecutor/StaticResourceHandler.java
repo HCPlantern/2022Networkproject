@@ -7,7 +7,9 @@ import com.nju.HttpServer.Http.Components.StatusLine;
 import com.nju.HttpServer.Http.HttpRequest;
 import com.nju.HttpServer.Http.HttpResponse;
 import com.nju.HttpServer.Common.StatusCode;
-
+import com.nju.HttpServer.SimpleServer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
@@ -17,7 +19,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class StaticResourceHandler extends BasicExecutor {
-
+    private static Logger logger = LogManager.getLogger(StaticResourceHandler.class);
     public static HashMap<String, String> MovedPermanentlyResource = new HashMap<>();
     public static HashMap<String, String> MovedTemporarilyResource = new HashMap<>();
     //todo:304状态码
