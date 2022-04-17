@@ -28,7 +28,7 @@ public class SimpleServer {
         Executors.add(new LoginExecutor());
         Executors.add(new RegisterExecutor());
         Executors.add(new ErrorExecutor());
-        Thread serverThread = new Thread(new ServerHandler(8000));
+        Thread serverThread = new Thread(new ServerHandler(5000));
         serverThread.start();
     }
 }

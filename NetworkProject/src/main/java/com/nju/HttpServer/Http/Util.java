@@ -9,7 +9,6 @@ public class Util {
     }
 
     public static HttpRequest String2Request(String s) {
-        if (s.equals("")) return null;
         String[] tmp = s.split(lineBreak);
         StartLine startLine = StartLine.String2StartLine(tmp[0]);
         Headers headers = new Headers();
@@ -28,7 +27,6 @@ public class Util {
     }
 
     public static HttpResponse String2Response(String s) {
-        if (s.equals("")) return null;
         String[] tmp = s.split(lineBreak);
         StatusLine statusLine = StatusLine.String2StatusLine(tmp[0]);
         Headers headers = new Headers();

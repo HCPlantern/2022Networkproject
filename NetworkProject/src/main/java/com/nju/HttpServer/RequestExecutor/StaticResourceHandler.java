@@ -10,6 +10,7 @@ import com.nju.HttpServer.Common.StatusCode;
 import com.nju.HttpServer.SimpleServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
@@ -22,7 +23,6 @@ public class StaticResourceHandler extends BasicExecutor {
     private static Logger logger = LogManager.getLogger(StaticResourceHandler.class);
     public static HashMap<String, String> MovedPermanentlyResource = new HashMap<>();
     public static HashMap<String, String> MovedTemporarilyResource = new HashMap<>();
-    //todo:304状态码
     public static HashMap<String, String> ModifiedTime = new HashMap<>();
 
     public StaticResourceHandler() {
@@ -53,17 +53,12 @@ public class StaticResourceHandler extends BasicExecutor {
             statusLine = new StatusLine(1.1, 200, "OK");
         }
 
-        if (target.endsWith(".html")) {
-            headers.addHeader("Content-Type", "text/html");
-        } else if (target.endsWith(".png")) {
-            headers.addHeader("Content-Type", "image/png");
-        } else if (target.endsWith(".jpg")) {
-            headers.addHeader("Content-Type", "image/jpeg");
-        } else if (target.endsWith(".js")) {
-            headers.addHeader("Content-Type", "text/javascript");
-        }
+        //Todo:用HashMap等方式替代MIME类型分支
+        Util.targetToMIME(target, headers);
+
         //重定向静态资源路径到public文件夹
-        String path = "src/main/public/" + target.substring(target.lastIndexOf("/") + 1);
+        logger.debug(target);
+        String path = "src/public" + target;
 
         // add length
         File f = new File(path);
@@ -73,7 +68,7 @@ public class StaticResourceHandler extends BasicExecutor {
         Date fileLastModifiedTime = new Date(f.lastModified());
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z", Locale.ENGLISH);
         sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-//        System.out.println(sdf.format(fileLastModifiedTime));
+//      logger.debug(sdf.format(fileLastModifiedTime));
         headers.addHeader("Last-Modified", sdf.format(fileLastModifiedTime));
 
         String time = request.getHeaders().getValue("If-Modified-Since");

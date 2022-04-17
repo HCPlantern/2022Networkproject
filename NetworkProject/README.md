@@ -22,6 +22,7 @@
 
 ### Todo:
 
-问题复现：多次硬刷新页面，可以看到IOException，猜测可能是连接断开时机的问题。
-
-- **紧急**：修复`keep-alive`问题（包括定时断开连接的实现，发送close connection请求的实现），主要在`RequestHandler`和`AcceptHandler`类中修改。
+- **已修复2022.4.17**：修复`keep-alive`问题（包括定时断开连接的实现，发送close connection请求的实现），主要在`RequestHandler`和`AcceptHandler`类中修改。*问题复现：多次硬刷新页面，可以看到IOException，猜测可能是连接断开时机的问题。*
+- **feat**：实现类Spring Controller模式的URL Mapper
+- **feat**：装潢状态码页，演示网站，搞一下门面工程
+- **feat**：期望的目标：能把软工2的网站放上去（想想就好）
