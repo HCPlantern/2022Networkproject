@@ -46,6 +46,7 @@ public class ResponseHandler implements Handler {
     public ResponseLine parseResponseLine(InputStream inputStream){
         return null;
     }
+
     //TODO: 提取响应头部
     @Override
     public MessageHeader parseMessageHeader(InputStream inputStream) {

@@ -11,5 +11,8 @@ import java.util.HashMap;
 @NoArgsConstructor
 public class RedirectResourceCache {
 //    hashmap含义:主机+路径+新的URI
-    HashMap<String, HashMap<String, URI>> redirectResourceCache;
+    private HashMap<URI, URI> redirectResourceCache;
+    public URI getnewURI(URI uri){
+        return redirectResourceCache.get(uri);
+    }
 }

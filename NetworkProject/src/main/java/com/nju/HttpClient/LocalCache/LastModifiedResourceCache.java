@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.net.URI;
 import java.util.HashMap;
 
 // 这个类主要辅助请求报文在请求头里面添加If-Modified-Since
@@ -15,5 +16,8 @@ import java.util.HashMap;
 @NoArgsConstructor
 public class LastModifiedResourceCache {
 //    hashmap存的是:主机+路径+资源
-    private HashMap<String, HashMap<String, LocalResource>>lastModifiedResourceCache;
+    private HashMap<URI, LocalResource>lastModifiedResourceCache;
+    public LocalResource getModifiedLocalResource(URI uri){
+        return lastModifiedResourceCache.get(uri);
+    }
 }

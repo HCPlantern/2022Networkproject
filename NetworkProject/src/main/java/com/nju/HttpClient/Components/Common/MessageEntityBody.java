@@ -13,7 +13,9 @@ public class MessageEntityBody {
     public String toString(String contentType) {
 //        如果没有body部分
         if(body.length==0){
-            return "";
+//            如果什么都没有的话应该返回一个\r\n
+//            这样符合报文格式
+            return "\r\n";
         }
         if(contentType!=null){
 //            只要看分割下来的前一个 后一个是编码类型

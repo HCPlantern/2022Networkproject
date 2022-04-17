@@ -23,10 +23,10 @@ public class MessageHeader {
     public String getFieldValue(String fieldName){
         return headers.get(fieldName);
     }
-    public String toString(){
-        StringBuilder messageHeader=new StringBuilder();
-        Set<String> headerFields=headers.keySet();
-        for(String headerField:headerFields){
+    public String toString() {
+        StringBuilder messageHeader = new StringBuilder();
+        Set<String> headerFields = headers.keySet();
+        for (String headerField : headerFields) {
             messageHeader.append(headerField).append(": ").append(headers.get(headerField)).append("\r\n");
         }
         return messageHeader.toString();
