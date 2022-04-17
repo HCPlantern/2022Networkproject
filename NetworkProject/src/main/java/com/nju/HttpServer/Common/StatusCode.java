@@ -1,5 +1,8 @@
 package com.nju.HttpServer.Common;
 
+/**
+ * 枚举类 状态码
+ **/
 public enum StatusCode {
     OK(200),
     MOVED_PERMANENTLY(301), FOUND(302), NOT_MODIFIED(304),

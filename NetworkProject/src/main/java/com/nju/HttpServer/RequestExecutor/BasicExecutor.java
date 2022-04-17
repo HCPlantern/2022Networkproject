@@ -3,7 +3,11 @@ package com.nju.HttpServer.RequestExecutor;
 import com.nju.HttpServer.Http.HttpRequest;
 import com.nju.HttpServer.Http.HttpResponse;
 
-public  abstract class BasicExecutor {
+/**
+ * 抽象父类
+ * 请求地址+请求方法确定了executor是什么
+ **/
+public abstract class BasicExecutor {
     /**
      * eg /login
      */
@@ -30,5 +34,5 @@ public  abstract class BasicExecutor {
         this.method = method;
     }
 
-    public abstract HttpResponse handle (HttpRequest request) throws Exception;
+    public abstract HttpResponse handle(HttpRequest request) throws Exception;
 }

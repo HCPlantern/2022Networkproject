@@ -13,6 +13,7 @@ public class ErrorExecutor extends BasicExecutor{
     @Override
     public HttpResponse handle(HttpRequest request) throws Exception{
         // do something bad
+        // 直接抛出一个错误异常
         throw new Exception("error");
     }
 }

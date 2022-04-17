@@ -2,6 +2,9 @@ package com.nju.HttpServer.Http;
 
 import com.nju.HttpServer.Http.Components.*;
 
+/**
+ * http请求类，负责封装http请求
+ **/
 public class HttpRequest implements Component {
     StartLine startLine;
     Headers headers;

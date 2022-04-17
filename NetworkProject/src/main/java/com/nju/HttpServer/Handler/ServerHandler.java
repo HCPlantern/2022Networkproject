@@ -20,6 +20,7 @@ public class ServerHandler implements Runnable {
     public ServerHandler(int port) {
         try {
             channel = AsynchronousServerSocketChannel.open();
+            //把本机地址绑定到Socket上
             channel.bind(new InetSocketAddress(port));
             logger.info("服务端已启动，端口号：" + port);
         } catch (IOException e) {
@@ -28,11 +29,13 @@ public class ServerHandler implements Runnable {
     }
 
     public void run() {
-/*        建立连接后，会自动回调AcceptHandler()处理。
-          第一个参数this是传给AcceptHandler()的。*/
+        /*
+         *是异步操作，与客户端建立连接后，系统会自动回调AcceptHandler()处理。
+         *第一个参数this是传给AcceptHandler()的，以便继续侦听新连接。
+         */
         channel.accept(this, new AcceptHandler());
         try {
-            EXIT_LATCH.await(); //保证主线程一直运行
+            EXIT_LATCH.await(); //保证主线程一直运行。八股。
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

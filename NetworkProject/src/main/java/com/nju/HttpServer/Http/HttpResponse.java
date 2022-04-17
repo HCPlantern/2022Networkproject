@@ -2,6 +2,9 @@ package com.nju.HttpServer.Http;
 
 import com.nju.HttpServer.Http.Components.*;
 
+/**
+ * http响应类，负责封装http响应
+ **/
 public class HttpResponse implements Component {
     StatusLine statusLine;
     Headers headers;
@@ -39,7 +42,7 @@ public class HttpResponse implements Component {
 
     @Override
     public String ToString() {
-        return statusLine.ToString() + headers.ToString() + '\n'+ body.ToString();
+        return statusLine.ToString() + headers.ToString() + '\n' + body.ToString();
     }
 
     @Override
