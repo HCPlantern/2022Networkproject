@@ -1,6 +1,7 @@
 package com.nju.HttpClient.Client;
 
 
+import com.nju.HttpClient.Components.Common.HeaderFields;
 import com.nju.HttpClient.Components.Request.HttpRequest;
 import com.nju.HttpClient.Components.Response.HttpResponse;
 import com.nju.HttpClient.Handler.RequestHandler;
@@ -23,13 +24,15 @@ public class Client {
     RedirectResourceCache redirectResourceCache;
     OutputStream clientOutputStream;
     InputStream clientInputStream;
+    SocketPool socketPool;
 
 //    客户端的构造函数
 //    参数是需要连接的远程主机的地址和端口
-    public Client(String hostname, Integer port) throws IOException {
+    public Client() throws IOException {
+        this.socketPool=new SocketPool(new HashMap<>());
         this.lastModifiedResourceCache=new LastModifiedResourceCache(new HashMap<>());
         this.redirectResourceCache=new RedirectResourceCache(new HashMap<>());
-        this.clientSocket=new Socket(hostname,port);
+//        this.clientSocket=new Socket(hostname,port);
         this.requestHandler=new RequestHandler(lastModifiedResourceCache,redirectResourceCache);
         this.responseHandler=new ResponseHandler(lastModifiedResourceCache,redirectResourceCache,this);
     }
@@ -37,14 +40,21 @@ public class Client {
     public HttpResponse sendRequest(HttpRequest requestMessage){
         HttpResponse httpResponse =null;
         try {
+//            首先重构一下报文
+            requestMessage=requestHandler.handle(requestMessage);
+            clientSocket=socketPool.createClientSocket(requestMessage);
 //            向服务端发送请求报文
             clientOutputStream=clientSocket.getOutputStream();
-//            首先要重构一下
-            requestMessage=requestHandler.handle(requestMessage);
             clientOutputStream.write(requestMessage.toBytes());
 //            得到来自服务端的响应报文
             clientInputStream=clientSocket.getInputStream();
             httpResponse=responseHandler.handle(requestMessage,clientInputStream);
+            String connection=requestMessage.getRequestHeader().getFieldValue(HeaderFields.Connection);
+            boolean isKeepAlive = connection != null && connection.equals("keep-alive");
+            if(!isKeepAlive){
+                socketPool.removeSocket(requestMessage.getRequestHeader().getFieldValue(HeaderFields.Host));
+            }
+            return httpResponse;
         }catch (Exception e){
             e.printStackTrace();
         }
