@@ -23,6 +23,7 @@ public class RequestHandler implements CompletionHandler<Integer //声明read操
     private AsynchronousSocketChannel channel;
     boolean isTimeout = false;
     public static TimerTask timerTask = null;
+    private long timeout = 15L; //响应给客户端的keep-alive的时间，单位:秒
 
     public RequestHandler(AsynchronousSocketChannel channel) {
         this.channel = channel;
@@ -38,30 +39,9 @@ public class RequestHandler implements CompletionHandler<Integer //声明read操
             //以UTF-8解码channel读出的字节
             String strMsg = new String(byteMsg, "UTF-8");
             logger.info("服务器收到请求:" + System.lineSeparator() + strMsg);
-
             try {
-                if (isTimeout) {
-                    channel.close();
-                    return;
-                }
-                // 把channel里转化出的字符串包装成Request
                 HttpRequest request = Util.String2Request(strMsg);
-
-                //Todo:keep-alive的处理
-                if (request.getHeaders().getValue("Keep-Alive") != null) {
-                    logger.debug("Keep-Alive");
-                    String timeout = request.getHeaders().getValue("Keep-Alive");
-                    if (timerTask != null) {
-                        timerTask.cancel();
-                    }
-                    timerTask = new TimerTask() {
-                        @Override
-                        public void run() {
-                            isTimeout = true;
-                        }
-                    };
-                    SimpleServer.timer.schedule(timerTask, Integer.parseInt(timeout.substring(8)) * 1000L);
-                }
+                if (request == null) return;
 
                 String target = request.getStartLine().getTarget();
                 String method = request.getStartLine().getMethod();
@@ -97,10 +77,55 @@ public class RequestHandler implements CompletionHandler<Integer //声明read操
                     response = executor.handle(request);
                 }
 
-                doWrite(response.ToBytes());
-                //timer 如果再次收到请求，重置timer，否则就关闭
+                //Todo:定时关闭
+                //Todo:keep-alive的处理
+                if (request.getHeaders().getValue("Connection").equals("keep-alive")) {
+                    logger.debug("Connection" + request.getHeaders().getValue("Connection"));
+                    if (timerTask != null) {
+                        timerTask.cancel();
+                    }
+                    timerTask = new TimerTask() {
+                        @Override
+                        public void run() {
+                            isTimeout = true;
+                            try {
+                                if (channel.isOpen()) {
+                                    logger.debug("关闭channel输入输出流");
+                                    channel.shutdownInput();
+                                    channel.shutdownOutput();
+                                    logger.debug("关闭channel");
+                                    channel.close();
+                                }
+                            } catch (IOException e) {
+                                logger.error("定时关闭channel时异常");
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+                    SimpleServer.timer.schedule(timerTask, timeout * 1000L);
+                    response.getHeaders().addHeader("Keep-Alive", "timeout=" + timeout);
+                } else if (request.getHeaders().getValue("Connection").equals("close")) {
+                    logger.debug("Connection" + request.getHeaders().getValue("Connection"));
+                    isTimeout = true;
+                }
 
-//            outToClient.close();
+                doWrite(response.ToBytes());
+
+                //此时，如果请求头有Connection: close，即客户端希望立即关闭连接
+                if (isTimeout) {
+                    try {
+                        if (channel.isOpen()) {
+                            logger.debug("关闭channel输入输出流");
+                            channel.shutdownInput();
+                            channel.shutdownOutput();
+                            logger.debug("关闭channel");
+                            channel.close();
+                        }
+                    } catch (IOException e) {
+                        logger.error("立即关闭channel时异常");
+                        e.printStackTrace();
+                    }
+                }
             } catch (Exception e) {
                 HttpResponse response = Template.generateStatusCode_500();
                 try {
@@ -132,14 +157,17 @@ public class RequestHandler implements CompletionHandler<Integer //声明read操
                             channel.write(buffer, buffer, this);
                         } else {
                             //写完了，异步读，
-                            ByteBuffer allocate = ByteBuffer.allocate(1024);
-                            buffer.clear();
-                            channel.read(allocate, allocate, new RequestHandler(channel));
+                            if (channel.isOpen() && !isTimeout) {
+                                ByteBuffer allocate = ByteBuffer.allocate(1024);
+                                buffer.clear();
+                                channel.read(allocate, allocate, new RequestHandler(channel));
+                            }
                         }
                     }
 
                     @Override
                     public void failed(Throwable e, ByteBuffer attachment) {
+                        logger.error("写入响应失败");
                         e.printStackTrace();
                     }
                 });
@@ -147,7 +175,10 @@ public class RequestHandler implements CompletionHandler<Integer //声明read操
 
     @Override
     public void failed(Throwable exc, ByteBuffer attachment) {
-        logger.error("读写失败");
+        if (!channel.isOpen()) {
+            return;
+        }
+        logger.error("读取请求失败");
         exc.printStackTrace();
         try {
             channel.close();
