@@ -56,7 +56,7 @@ public class RequestHandler implements Handler {
         String oldPath=requestMessage.getRequestLine().getRequestURL();
         URI oldURI=new URI("http",oldHost,oldPath,null);
 //        获得新的请求路径
-        URI newURI=redirectResourceCache.getnewURI(oldURI);
+        URI newURI=redirectResourceCache.getNewUri(oldURI);
         if(newURI!=null){
             String newHost=newURI.getHost();
             String newPath=newURI.getPath();
