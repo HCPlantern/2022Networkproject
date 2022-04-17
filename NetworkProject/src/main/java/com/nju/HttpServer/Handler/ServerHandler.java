@@ -14,6 +14,9 @@ public class ServerHandler implements Runnable {
     private static final CountDownLatch EXIT_LATCH = new CountDownLatch(1);
     public AsynchronousServerSocketChannel channel = null;
 
+    /**
+     * @param port:侦听的端口
+     **/
     public ServerHandler(int port) {
         try {
             channel = AsynchronousServerSocketChannel.open();
@@ -25,6 +28,8 @@ public class ServerHandler implements Runnable {
     }
 
     public void run() {
+/*        建立连接后，会自动回调AcceptHandler()处理。
+          第一个参数this是传给AcceptHandler()的。*/
         channel.accept(this, new AcceptHandler());
         try {
             EXIT_LATCH.await(); //保证主线程一直运行

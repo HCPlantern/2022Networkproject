@@ -17,7 +17,7 @@ import java.nio.channels.CompletionHandler;
 import java.util.TimerTask;
 
 /****
- * Integer:声明read操作返回的类型（读数据个数）
+ * Integer:声明read操作返回的类型（读数据个数），为负数则读取失败
  * ByteBuffer:调用读操作传入的类型，针对read函数第一个buffer
  * channel:用户读取信息或者发送信息的channel
  */
@@ -32,18 +32,28 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
         this.channel = channel;
     }
 
+    /**
+     * 系统从channel中成功读取完数据后，会调用completed()
+     *
+     * @param result:读完的数据长度，如果非正，代表未读出数据
+     * @param buffer:读完的数据存放的地方
+     **/
     @Override
     public void completed(Integer result, ByteBuffer buffer) {
+        if (result <= 0) {
+            logger.warn("未读出数据");
+            return;
+        }
         buffer.flip();//内核已经帮我们把数据写到buffer，现在切换到读模式，将数据从buffer中读出来
+        @SuppressWarnings("开的字节数组byteMsg的大小有待商榷")
         byte[] byteMsg = new byte[buffer.remaining()]; //remaining()返回剩余的可用长度,此长度为实际读取的数据长度
-        buffer.get(byteMsg);//buffer中内容转移到byteMsg
+        buffer.get(byteMsg);//buffer中内容转移到字节数组byteMsg
 
         try {
-            //以UTF-8解码channel读出的字节们byteMsg
+            //以UTF-8解码channel读出的字节数组byteMsg。
             String strMsg = new String(byteMsg, "UTF-8");
-            logger.info("服务器收到请求:" + System.lineSeparator() + strMsg);
-            if (strMsg.equals("")) return;
-
+            logger.info("服务器收到请求，完整打印:" + System.lineSeparator() + strMsg);
+            //根据请求匹配Executor进行处理并生成Response，逻辑与tfgg基本一致
             try {
                 HttpRequest request = Util.String2Request(strMsg);
                 String target = request.getStartLine().getTarget();
@@ -78,25 +88,16 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
                     response = executor.handle(request);
                 }
 
-                //Todo:keep-alive的处理,定时关闭
                 handleKeepAlive(request, response);
                 //发送response
                 writeBytesToChannel(response.ToBytes());
 
-                //如果请求头有Connection: close，即客户端希望立即关闭连接
-                if (isTimeout && channel.isOpen()) {
-                    try {
-                        logger.debug("关闭channel输入输出流");
-                        channel.shutdownInput();
-                        channel.shutdownOutput();
-                        logger.debug("关闭channel");
-                        channel.close();
-                    } catch (IOException e) {
-                        logger.warn("立即关闭channel时异常");
-                        e.printStackTrace();
-                    }
+                //如果请求头有Connection: close，即客户端希望立即关闭连接，isTimeout在handleKeepAlive()方法中被设为true
+                if (isTimeout) {
+                    closeChannel("因客户端不想长连接，立即");
                 }
             } catch (Exception e) {
+                //意料之外的异常，发送500状态码
                 HttpResponse response = Template.generateStatusCode_500();
                 try {
                     writeBytesToChannel(response.ToBytes());
@@ -111,23 +112,23 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
     }
 
     /**
-     * 向channel异步写数据
+     * 向channel异步写数据，即把响应发给客户端
+     *
+     * @param bytes:待写的字节数组
      **/
     private void writeBytesToChannel(byte[] bytes) {
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
         channel.write(buffer, //从哪里拿数据
                 buffer, //回调函数传入的参数
                 //回调函数
-                new CompletionHandler<Integer, //写完成后返回的参数类型
-                        ByteBuffer>() { //往回调函数传入的参数类型
-                    // 因为第二个参数传入的是ByteBuffer类型
+                new CompletionHandler<Integer, ByteBuffer>() {
                     @Override
                     public void completed(Integer result, ByteBuffer buffer) {
                         //如果没有发送完则继续发送。
                         if (buffer.hasRemaining()) {
                             channel.write(buffer, buffer, this);
                         } else {
-                            //写完了，异步读，
+                            //否则写完了，继续异步读
                             if (channel.isOpen() && !isTimeout) {
                                 ByteBuffer allocate = ByteBuffer.allocate(1024);
                                 buffer.clear();
@@ -146,6 +147,9 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
 
     /**
      * keep-alive的处理,设定channel定时关闭,并返回期望的长连接时长
+     *
+     * @param request:接收到的已封装好的http请求
+     * @param response:可能需要添加Keep-Alive时长的响应
      **/
     private void handleKeepAlive(HttpRequest request, HttpResponse response) {
         if (request.getHeaders().getValue("Connection") != null &&
@@ -158,18 +162,7 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
                 @Override
                 public void run() {
                     isTimeout = true;
-                    try {
-                        if (channel.isOpen()) {
-                            logger.debug("关闭channel输入输出流");
-                            channel.shutdownInput();
-                            channel.shutdownOutput();
-                            logger.debug("关闭channel");
-                            channel.close();
-                        }
-                    } catch (IOException e) {
-                        logger.warn("定时关闭channel时异常");
-                        e.printStackTrace();
-                    }
+                    closeChannel("因长连接到期");
                 }
             };
             SimpleServer.timer.schedule(timerTask, timeout * 1000L);
@@ -178,6 +171,26 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
                 request.getHeaders().getValue("Connection").equals("close")) {
             logger.debug("Connection" + request.getHeaders().getValue("Connection"));
             isTimeout = true;
+        }
+    }
+
+    /**
+     * 调用此方法关闭channel!
+     *
+     * @param logMsg:关闭channel时的日志
+     **/
+    private void closeChannel(String logMsg) {
+        if (channel.isOpen()) {
+            try {
+                logger.debug(logMsg + "关闭channel输入输出流");
+                channel.shutdownInput();
+                channel.shutdownOutput();
+                logger.debug(logMsg + "关闭channel");
+                channel.close();
+            } catch (IOException e) {
+                logger.warn(logMsg + "关闭channel时异常");
+                e.printStackTrace();
+            }
         }
     }
 

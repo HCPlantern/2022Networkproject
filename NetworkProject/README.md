@@ -4,7 +4,7 @@
 
 本项目使用了`log4j2`记录日志，为保证控制台日志信息**有颜色**，请先设置JVM参数：`-Dlog4j.skipJansi=false`
 ![](运行前配置.png)
-运行后，打开http://localhost:8000/index.html ,出现一个带图片的注册登录页面，说明项目配置正常。
+运行后，打开http://localhost:5000/index.html ,出现一个带图片的注册登录页面，说明项目配置正常。
 
 本项目请求处理逻辑均借鉴（ChaoXi）了tfgg的代码，在Socket IO部分将NIO（同步非阻塞）改为了AIO（异步非阻塞），为了体现创新（BiMianChaChong）。
 
