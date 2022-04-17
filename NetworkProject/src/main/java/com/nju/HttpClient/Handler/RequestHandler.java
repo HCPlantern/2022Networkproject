@@ -6,7 +6,9 @@ import com.nju.HttpClient.Components.Common.MessageHeader;
 import com.nju.HttpClient.Components.Request.HttpRequest;
 import com.nju.HttpClient.Components.Request.RequestLine;
 import com.nju.HttpClient.LocalCache.LastModifiedResourceCache;
+import com.nju.HttpClient.LocalCache.LocalResource;
 import com.nju.HttpClient.LocalCache.RedirectResourceCache;
+import com.nju.HttpClient.Utils.TimeTransformer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -56,29 +58,34 @@ public class RequestHandler implements Handler {
 //        获得新的请求路径
         URI newURI=redirectResourceCache.getnewURI(oldURI);
 //        注意新的主机的是由主机号+端口号组成(如果没有端口)
-        String newHost=newURI.getHost();
-        String newPath=newURI.getPath();
-        requestMessage.getRequestLine().setRequestURL(newPath);
-        requestMessage.getRequestHeader().putField(HeaderFields.Host,newHost);
+        if(newURI!=null){
+            String newHost=newURI.getHost();
+            String newPath=newURI.getPath();
+            requestMessage.getRequestLine().setRequestURL(newPath);
+            requestMessage.getRequestHeader().putField(HeaderFields.Host,newHost);
+        }
         return requestMessage;
     }
     //TODO: 尝试给当前的报文中加上Last-Modified(如果lastModifiedResourceCache缓存中有的话就添,如果没有就不添),用于触发304
-    public HttpRequest findLastModified(HttpRequest requestMessage){
-        return null;
+    public HttpRequest findLastModified(HttpRequest requestMessage) throws URISyntaxException {
+        String resourceHost=requestMessage.getRequestHeader().getFieldValue(HeaderFields.Host);
+        String resourcePath=requestMessage.getRequestLine().getRequestURL();
+        URI resourceURI=new URI("http",resourceHost,resourcePath,null);
+        LocalResource localResource=lastModifiedResourceCache.getModifiedLocalResource(resourceURI);
+        if(localResource!=null){
+            Long timeStap= localResource.getTimeStamp();
+            requestMessage.getRequestHeader().putField(HeaderFields.If_Modified_Since, TimeTransformer.toTimeString(timeStap));
+        }
+        return requestMessage;
     }
-
-
-    //TODO: 提取请求行
+//    这些对于请求报文来说不要写
     public RequestLine parseRequestLine(InputStream inputStream){
-
         return null;
     }
-    //TODO: 提取请求头
     @Override
     public MessageHeader parseMessageHeader(InputStream inputStream) {
         return null;
     }
-    //TODO: 提取数据部分
     @Override
     public MessageEntityBody parseMessageEntityBody(InputStream inputStream) {
         return null;
