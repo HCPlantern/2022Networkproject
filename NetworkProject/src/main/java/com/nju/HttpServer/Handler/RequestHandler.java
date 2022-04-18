@@ -69,7 +69,7 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
                 try {
                     writeBytesToChannel(response.ToBytes());
                 } catch (Exception ee) {
-                    ee.printStackTrace();
+                    logger.error(ee);
                 }
                 logger.error(e);
             }
@@ -118,12 +118,13 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
     private void handleKeepAlive(HttpRequest request, HttpResponse response) {
         if (request.getHeaders().getValue("Connection") != null &&
                 request.getHeaders().getValue("Connection").equals("keep-alive")) {
+            //请求头含有keep-alive信息
             logger.debug("Connection" + request.getHeaders().getValue("Connection") + " channel:" + channel.hashCode());
             keepalivehandler.setKeepAlive(channel);
             //response头添加长连接时长
             response.getHeaders().addHeader("Keep-Alive", "timeout=" + KeepAliveHandler.getAliveTime());
-        } else if (request.getHeaders().getValue("Connection") != null &&
-                request.getHeaders().getValue("Connection").equals("close")) {
+        } else {
+            //请求头不包含keep-alive信息，响应完立即关闭channel
             logger.debug("Connection" + request.getHeaders().getValue("Connection"));
             isKeepAlive = false;
         }
@@ -132,15 +133,7 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
 
     @Override
     public void failed(Throwable exc, ByteBuffer attachment) {
-        if (!channel.isOpen()) {
-            return;
-        }
-        logger.warn("读取请求失败");
-        exc.printStackTrace();
-        try {
-            channel.close();
-        } catch (IOException e) {
-            logger.error(e);
-        }
+        logger.error("读取请求失败", exc);
+        AcceptHandler.closeChannel(channel, "因RequestHandler读取失败");
     }
 }

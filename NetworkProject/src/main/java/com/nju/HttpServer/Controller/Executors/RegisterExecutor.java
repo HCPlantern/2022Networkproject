@@ -11,7 +11,7 @@ import java.util.HashMap;
 public class RegisterExecutor implements Executor {
     public static HashMap<String, String> db = new HashMap<>();
 
-    public HttpResponse handle(HttpRequest request) {
+    public HttpResponse handle(HttpRequest request) throws Exception {
         HashMap<String, String> db = RegisterExecutor.db;
         HttpResponse response = null;
         Headers headers = request.getHeaders();

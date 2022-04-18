@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 public class LoginExecutor implements Executor {
 
-    public HttpResponse handle(HttpRequest request) {
+    public HttpResponse handle(HttpRequest request) throws Exception {
         HashMap<String, String> db = RegisterExecutor.db;
         HttpResponse response = null;
         Headers headers = request.getHeaders();

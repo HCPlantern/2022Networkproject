@@ -98,7 +98,7 @@ public class Router {
     /**
      * 匹配请求uri和请求方法
      **/
-    public HttpResponse MapRoute(HttpRequest request) {
+    public HttpResponse MapRoute(HttpRequest request) throws Exception {
         HttpResponse response = null;
         String uri = request.getStartLine().getTarget();
         String requestMethod = request.getStartLine().getMethod().toLowerCase();

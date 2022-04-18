@@ -13,17 +13,17 @@ import com.nju.HttpServer.Router.RouteMapping;
 public class RequestMapper {
 
     @RouteMapping(uri = "/login", method = "post")
-    public HttpResponse Login(HttpRequest request) {
+    public HttpResponse Login(HttpRequest request) throws Exception {
         return new LoginExecutor().handle(request);
     }
 
     @RouteMapping(uri = "/register", method = "post")
-    public HttpResponse Register(HttpRequest request) {
+    public HttpResponse Register(HttpRequest request) throws Exception {
         return new RegisterExecutor().handle(request);
     }
 
     @RouteMapping(uri = "/error", method = "get")
-    public HttpResponse Error(HttpRequest request) {
+    public HttpResponse Error(HttpRequest request) throws Exception {
         return new ErrorExecutor().handle(request);
     }
 }

@@ -31,7 +31,7 @@ public class AcceptHandler implements CompletionHandler<AsynchronousSocketChanne
         serverHandler.channel.accept(serverHandler, this);
 
         try {
-            logger.info("建立连接:" + channel.getRemoteAddress().toString() + " hashcode:" + channel.hashCode());
+            logger.info("建立连接:" + channel.getRemoteAddress().toString() + ",hashcode:" + channel.hashCode());
         } catch (Exception e) {
             logger.error(e);
         }

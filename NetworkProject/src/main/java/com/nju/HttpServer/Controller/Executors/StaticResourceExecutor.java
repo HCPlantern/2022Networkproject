@@ -58,7 +58,7 @@ public class StaticResourceExecutor implements Executor {
         return target.contains(".");
     }
 
-    public HttpResponse handle(HttpRequest request) {
+    public HttpResponse handle(HttpRequest request) throws Exception {
         StatusLine statusLine = null;
         Headers headers = new Headers();
         Body body = new Body();
