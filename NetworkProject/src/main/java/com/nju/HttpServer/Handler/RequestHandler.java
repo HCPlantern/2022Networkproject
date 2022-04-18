@@ -4,8 +4,6 @@ import com.nju.HttpServer.Common.Template;
 import com.nju.HttpServer.Http.HttpRequest;
 import com.nju.HttpServer.Http.HttpResponse;
 import com.nju.HttpServer.Http.Util;
-import com.nju.HttpServer.RequestExecutor.BasicExecutor;
-import com.nju.HttpServer.RequestExecutor.StaticResourceHandler;
 import com.nju.HttpServer.SimpleServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,38 +53,8 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
             //根据请求匹配Executor进行处理并生成Response，逻辑与tfgg基本一致
             try {
                 HttpRequest request = Util.String2Request(strMsg);
-                String target = request.getStartLine().getTarget();
-                String method = request.getStartLine().getMethod();
-                HttpResponse response = null;
-                BasicExecutor executor = null;
-
-                // 如果请求一个静态资源，调用StaticResourceHandler
-                if (StaticResourceHandler.isStaticTarget(target) && method.equalsIgnoreCase("get")) {
-                    executor = new StaticResourceHandler();
-                } else {
-                    // 否则，在持有的executor中找到合适的，用这个executor处理请求
-                    for (BasicExecutor e : SimpleServer.Executors) {
-                        if (target.endsWith(e.getUrl()) && method.equalsIgnoreCase(e.getMethod())) {
-                            executor = e;
-                            break;
-                        }
-                    }
-                }
-                // 找不到合适的executor
-                // 404: 没有对应的url; 405: 有对应的url但是没有对应的method
-                if (executor == null) {
-                    response = Template.generateStatusCode_404();
-                    //todo 针对post静态资源会出现bug，不一定是404
-                    for (BasicExecutor e : SimpleServer.Executors) {
-                        if (target.endsWith(e.getUrl())) {
-                            response = Template.generateStatusCode_405();
-                            break;
-                        }
-                    }
-                } else {
-                    response = executor.handle(request);
-                }
-
+                HttpResponse response = SimpleServer.router.MapRoute(request);
+                //处理Keep-Alive，包括设置定时关闭
                 handleKeepAlive(request, response);
                 //发送response
                 writeBytesToChannel(response.ToBytes());

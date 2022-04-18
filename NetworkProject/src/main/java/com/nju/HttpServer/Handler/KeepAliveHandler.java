@@ -13,7 +13,7 @@ import java.util.TimerTask;
  * 体现为定时关闭channel
  **/
 public class KeepAliveHandler {
-    private static Logger logger = LogManager.getLogger(RequestHandler.class);
+    private static Logger logger = LogManager.getLogger(KeepAliveHandler.class);
     private TimerTask timerTask = null;//定时器
     private static final long aliveTime = 10L; //响应给客户端的keep-alive的时间，单位:秒
     private static HashMap<AsynchronousSocketChannel, TimerTask> timerTaskHashMap = new HashMap<>();

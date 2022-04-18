@@ -1,18 +1,18 @@
-package com.nju.HttpServer.RequestExecutor;
+package com.nju.HttpServer.Controller.Executors;
 
+import com.nju.HttpServer.Common.StatusCode;
 import com.nju.HttpServer.Common.Template;
 import com.nju.HttpServer.Http.Components.Body;
 import com.nju.HttpServer.Http.Components.Headers;
 import com.nju.HttpServer.Http.Components.StatusLine;
 import com.nju.HttpServer.Http.HttpRequest;
 import com.nju.HttpServer.Http.HttpResponse;
-import com.nju.HttpServer.Common.StatusCode;
-import com.nju.HttpServer.SimpleServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,8 +23,8 @@ import java.util.TimeZone;
  * 什么是静态资源：
  * 静态资源是指在不同请求中访问到的数据都相同的静态文件。例如：图片、视频、网站中的文件（html、css、js）、软件安装包、apk文件、压缩包文件等
  **/
-public class StaticResourceHandler extends BasicExecutor {
-    private static Logger logger = LogManager.getLogger(StaticResourceHandler.class);
+public class StaticResourceExecutor implements Executor {
+    private static Logger logger = LogManager.getLogger(StaticResourceExecutor.class);
     /*
      * 永久移动的资源 对应状态码301
      * 301 Moved Permanently 永久移动。是指请求的资源已被永久的移动到新的URL，返回信息会包括新的URL，浏览器还会自动定向到新的URL。今后任何新的请求都应该使用新的URL来代替
@@ -41,10 +41,11 @@ public class StaticResourceHandler extends BasicExecutor {
      */
     public static HashMap<String, String> ModifiedTime = new HashMap<>();
 
-    public StaticResourceHandler() {
+    public StaticResourceExecutor() {
         MovedPermanentlyResource.put("/movedPic.png", "/pic.png");
         MovedPermanentlyResource.put("/movedIndex.html", "/index.html");
         MovedTemporarilyResource.put("/movedPic2.png", "/pic.png");
+        MovedTemporarilyResource.put("/movedPic2.jpg", "/pic.jpg");
         MovedTemporarilyResource.put("/movedIndex2.html", "/index.html");
     }
 
@@ -54,11 +55,10 @@ public class StaticResourceHandler extends BasicExecutor {
      * @param target:请求目标，eg.: /index.html
      **/
     public static boolean isStaticTarget(String target) {
-        target = target.substring(target.lastIndexOf("/") + 1);
         return target.contains(".");
     }
 
-    public HttpResponse handle(HttpRequest request) throws Exception {
+    public HttpResponse handle(HttpRequest request) {
         StatusLine statusLine = null;
         Headers headers = new Headers();
         Body body = new Body();
@@ -79,7 +79,6 @@ public class StaticResourceHandler extends BasicExecutor {
         Util.targetToMIME(target, headers);
 
         //重定向静态资源路径到public文件夹
-//        logger.debug(target);
         String path = "src/public" + target;
 
         // add length
@@ -96,7 +95,12 @@ public class StaticResourceHandler extends BasicExecutor {
         //这边要判断一下是不是304：如果请求的资源的修改日期是最新的（即文件没改过），就返回304
         String time = request.getHeaders().getValue("If-Modified-Since");
         if (time != null) {
-            Date Limit = sdf.parse(time);
+            Date Limit = null;
+            try {
+                Limit = sdf.parse(time);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             if (Limit.compareTo(fileLastModifiedTime) > 0) {
                 return Template.generateStatusCode_304();
             }
@@ -104,15 +108,15 @@ public class StaticResourceHandler extends BasicExecutor {
 //      不符合304，则要从服务端把资源写到body里给客户端
         byte[] bytesArray = new byte[(int) f.length()];
         try {
+            //把文件读取为字节数组
             FileInputStream fis = new FileInputStream(f);
             fis.read(bytesArray);
-            //read file into bytes[]
             fis.close();
         } catch (Exception e) {
             e.printStackTrace();
+            //服务器上没有要请求的文件
             return new HttpResponse(new StatusLine(1.1, StatusCode.NOT_FOUND.getCode(), "Not Found"), new Headers(), new Body());
         }
-
 
         body.setData(bytesArray);
 
