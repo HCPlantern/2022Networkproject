@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.util.TimerTask;
 
 /****
  * Integer:声明read操作返回的类型（读数据个数），为负数则读取失败
@@ -25,7 +24,7 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
     private static Logger logger = LogManager.getLogger(RequestHandler.class);
     private AsynchronousSocketChannel channel;
     private boolean isKeepAlive = true;
-    private keepAliveHandler keepalivehandler = new keepAliveHandler();
+    private KeepAliveHandler keepalivehandler = new KeepAliveHandler();
 
     public RequestHandler(AsynchronousSocketChannel channel) {
         this.channel = channel;
@@ -43,6 +42,7 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
             logger.warn("未读出数据");
             return;
         }
+        AcceptHandler.readChannel(channel); //继续异步读
         buffer.flip();//内核已经帮我们把数据写到buffer，现在切换到读模式，将数据从buffer中读出来
         //开的字节数组byteMsg的大小有待商榷
         byte[] byteMsg = new byte[result]; //remaining()返回剩余的可用长度,此长度为实际读取的数据长度
@@ -127,9 +127,9 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
                         if (buffer.hasRemaining()) {
                             channel.write(buffer, buffer, this);
                         } else {
-                            //否则写完了，继续异步读
-                            buffer.clear();//先清除写入buffer
-                            AcceptHandler.readChannel(channel);
+                            //否则写完了
+                            buffer.clear();//清除写入buffer
+//                            AcceptHandler.readChannel(channel); //继续异步读，放在completed开头更合适
                         }
                     }
 
@@ -152,7 +152,8 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
                 request.getHeaders().getValue("Connection").equals("keep-alive")) {
             logger.debug("Connection" + request.getHeaders().getValue("Connection") + " channel:" + channel.hashCode());
             keepalivehandler.setKeepAlive(channel);
-            response.getHeaders().addHeader("Keep-Alive", "timeout=" + keepAliveHandler.getAliveTime());
+            //response头添加长连接时长
+            response.getHeaders().addHeader("Keep-Alive", "timeout=" + KeepAliveHandler.getAliveTime());
         } else if (request.getHeaders().getValue("Connection") != null &&
                 request.getHeaders().getValue("Connection").equals("close")) {
             logger.debug("Connection" + request.getHeaders().getValue("Connection"));
