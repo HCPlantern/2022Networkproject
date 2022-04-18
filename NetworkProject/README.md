@@ -6,7 +6,7 @@
 ![](运行前配置.png)
 运行后，打开http://localhost:5000/index.html ,出现一个带图片的注册登录页面，说明项目配置正常。
 
-本项目请求处理逻辑均借鉴（ChaoXi）了tfgg的代码，在Socket IO部分将NIO（同步非阻塞）改为了AIO（异步非阻塞），为了体现创新（BiMianChaChong）。
+本项目请求处理逻辑均借鉴（ChaoXi）了tfgg的代码，在Socket IO部分将BIO（同步阻塞）改为了AIO（异步非阻塞），为了体现创新（BiMianChaChong）。
 
 然而，这样的改动却带来了一些（JuDa）挑战。需要深入了解Java AIO才能继续进行工作。
 
@@ -23,6 +23,6 @@
 ### Todo:
 
 - **已修复2022.4.17**：修复`keep-alive`问题（包括定时断开连接的实现，发送close connection请求的实现），主要在`RequestHandler`和`AcceptHandler`类中修改。*问题复现：多次硬刷新页面，可以看到IOException，猜测可能是连接断开时机的问题。*
-- **feat**：实现类Spring Controller模式的URL Mapper
+- **已实现2022.4.18**：实现类Spring Controller模式的URL Mapper
 - **feat**：装潢状态码页，演示网站，搞一下门面工程
 - **feat**：期望的目标：能把软工2的网站放上去（想想就好）
