@@ -24,9 +24,8 @@ import java.util.TimerTask;
 public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
     private static Logger logger = LogManager.getLogger(RequestHandler.class);
     private AsynchronousSocketChannel channel;
-    boolean isTimeout = false;
-    public static TimerTask timerTask = null;
-    private long timeout = 15L; //响应给客户端的keep-alive的时间，单位:秒
+    private boolean isKeepAlive = true;
+    private keepAliveHandler keepalivehandler = new keepAliveHandler();
 
     public RequestHandler(AsynchronousSocketChannel channel) {
         this.channel = channel;
@@ -45,8 +44,8 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
             return;
         }
         buffer.flip();//内核已经帮我们把数据写到buffer，现在切换到读模式，将数据从buffer中读出来
-        @SuppressWarnings("开的字节数组byteMsg的大小有待商榷")
-        byte[] byteMsg = new byte[buffer.remaining()]; //remaining()返回剩余的可用长度,此长度为实际读取的数据长度
+        //开的字节数组byteMsg的大小有待商榷
+        byte[] byteMsg = new byte[result]; //remaining()返回剩余的可用长度,此长度为实际读取的数据长度
         buffer.get(byteMsg);//buffer中内容转移到字节数组byteMsg
 
         try {
@@ -93,8 +92,8 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
                 writeBytesToChannel(response.ToBytes());
 
                 //如果请求头有Connection: close，即客户端希望立即关闭连接，isTimeout在handleKeepAlive()方法中被设为true
-                if (isTimeout) {
-                    closeChannel("因客户端不想长连接，立即");
+                if (!isKeepAlive) {
+                    AcceptHandler.closeChannel(channel, "因客户端不想长连接，立即");
                 }
             } catch (Exception e) {
                 //意料之外的异常，发送500状态码
@@ -104,7 +103,7 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
                 } catch (Exception ee) {
                     ee.printStackTrace();
                 }
-                e.printStackTrace();
+                logger.error(e);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -129,18 +128,15 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
                             channel.write(buffer, buffer, this);
                         } else {
                             //否则写完了，继续异步读
-                            if (channel.isOpen() && !isTimeout) {
-                                ByteBuffer allocate = ByteBuffer.allocate(1024);
-                                buffer.clear();
-                                channel.read(allocate, allocate, new RequestHandler(channel));
-                            }
+                            buffer.clear();//先清除写入buffer
+                            AcceptHandler.readChannel(channel);
                         }
                     }
 
                     @Override
                     public void failed(Throwable e, ByteBuffer attachment) {
                         logger.warn("写入响应失败");
-                        e.printStackTrace();
+                        logger.error(e);
                     }
                 });
     }
@@ -154,45 +150,16 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
     private void handleKeepAlive(HttpRequest request, HttpResponse response) {
         if (request.getHeaders().getValue("Connection") != null &&
                 request.getHeaders().getValue("Connection").equals("keep-alive")) {
-            logger.debug("Connection" + request.getHeaders().getValue("Connection"));
-            if (timerTask != null) {
-                timerTask.cancel();
-            }
-            timerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    isTimeout = true;
-                    closeChannel("因长连接到期");
-                }
-            };
-            SimpleServer.timer.schedule(timerTask, timeout * 1000L);
-            response.getHeaders().addHeader("Keep-Alive", "timeout=" + timeout);
+            logger.debug("Connection" + request.getHeaders().getValue("Connection") + " channel:" + channel.hashCode());
+            keepalivehandler.setKeepAlive(channel);
+            response.getHeaders().addHeader("Keep-Alive", "timeout=" + keepAliveHandler.getAliveTime());
         } else if (request.getHeaders().getValue("Connection") != null &&
                 request.getHeaders().getValue("Connection").equals("close")) {
             logger.debug("Connection" + request.getHeaders().getValue("Connection"));
-            isTimeout = true;
+            isKeepAlive = false;
         }
     }
 
-    /**
-     * 调用此方法关闭channel!
-     *
-     * @param logMsg:关闭channel时的日志
-     **/
-    private void closeChannel(String logMsg) {
-        if (channel.isOpen()) {
-            try {
-                logger.debug(logMsg + "关闭channel输入输出流");
-                channel.shutdownInput();
-                channel.shutdownOutput();
-                logger.debug(logMsg + "关闭channel");
-                channel.close();
-            } catch (IOException e) {
-                logger.warn(logMsg + "关闭channel时异常");
-                e.printStackTrace();
-            }
-        }
-    }
 
     @Override
     public void failed(Throwable exc, ByteBuffer attachment) {
@@ -204,7 +171,7 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
         try {
             channel.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error(e);
         }
     }
 }

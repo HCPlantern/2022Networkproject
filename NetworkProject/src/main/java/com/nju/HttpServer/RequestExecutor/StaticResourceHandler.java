@@ -79,7 +79,7 @@ public class StaticResourceHandler extends BasicExecutor {
         Util.targetToMIME(target, headers);
 
         //重定向静态资源路径到public文件夹
-        logger.debug(target);
+//        logger.debug(target);
         String path = "src/public" + target;
 
         // add length
