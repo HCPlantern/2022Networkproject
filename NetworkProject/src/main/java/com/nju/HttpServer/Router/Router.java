@@ -26,14 +26,20 @@ public class Router {
             this.method = method;
         }
 
+        /**
+         * 调用注册的方法
+         *
+         * @param request:传给方法的参数
+         */
         public HttpResponse call(HttpRequest request) {
             HttpResponse response = null;
             try {
+                //调用方法，传参
                 response = (HttpResponse) method.invoke(object, request);
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                logger.error(e);
             } catch (InvocationTargetException e) {
-                e.printStackTrace();
+                logger.error(e);
             }
             return response;
         }
@@ -85,7 +91,7 @@ public class Router {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e);
         }
     }
 

@@ -17,7 +17,7 @@ public class Template {
         String html_200 = "<html>\n" +
                 "<head><title>200 OK</title></head>\n" +
                 "<body bgcolor=\"white\">\n" +
-                "<center><h1>200 OK</h1><h2>" + hint + "</h2><h6>simple http-server<h6></center>\n" +
+                "<center><h1>200 OK</h1><h2>" + hint + "</h2><h6>Simple AIO Http-Server<h6></center>\n" +
                 "</body>\n" +
                 "</html>";
         headers.addHeader("Content-Type", "text/html");
@@ -32,7 +32,7 @@ public class Template {
         String html404 = "<html>\n" +
                 "<head><title>404 Not Found</title></head>\n" +
                 "<body bgcolor=\"white\">\n" +
-                "<center><h1>404 Not Found</h1><h6>simple http-server<h6></center>\n" +
+                "<center><h1>404 Not Found</h1><h6>Simple AIO Http-Server<h6></center>\n" +
                 "</body>\n" +
                 "</html>";
         headers.addHeader("Content-Type", "text/html");
@@ -47,7 +47,7 @@ public class Template {
         String html405 = "<html>\n" +
                 "<head><title>405 Not Allowed</title></head>\n" +
                 "<body bgcolor=\"white\">\n" +
-                "<center><h1>405 Not Allowed</h1><h6>simple http-server<h6></center>\n" +
+                "<center><h1>405 Not Allowed</h1><h6>Simple AIO Http-Server<h6></center>\n" +
                 "</body>\n" +
                 "</html>";
         headers.addHeader("Content-Type", "text/html");
@@ -62,7 +62,7 @@ public class Template {
         String html_500 = "<html>\n" +
                 "<head><title>500 Internal Server Error</title></head>\n" +
                 "<body bgcolor=\"white\">\n" +
-                "<center><h1>500 Internal Server Error</h1><h6>simple http-server<h6></center>\n" +
+                "<center><h1>500 Internal Server Error</h1><h6>Simple AIO Http-Server<h6></center>\n" +
                 "</body>\n" +
                 "</html>";
         headers.addHeader("Content-Type", "text/html");
@@ -77,7 +77,7 @@ public class Template {
         String html_400 = "<html>\n" +
                 "<head><title>400 Bad Request</title></head>\n" +
                 "<body bgcolor=\"white\">\n" +
-                "<center><h1>400 Bad Request</h1><h6>simple http-server<h6></center>\n" +
+                "<center><h1>400 Bad Request</h1><h6>Simple AIO Http-Server<h6></center>\n" +
                 "</body>\n" +
                 "</html>";
         headers.addHeader("Content-Type", "text/html");
@@ -99,7 +99,7 @@ public class Template {
         String html_301 = "<html>\n" +
                 "<head><title>301 Moved Permanrntly</title></head>\n" +
                 "<body bgcolor=\"white\">\n" +
-                "<center><h1>301 Moved Permanrntly</h1><h6>simple http-server<h6></center>\n" +
+                "<center><h1>301 Moved Permanrntly</h1><h6>Simple AIO Http-Server<h6></center>\n" +
                 "</body>\n" +
                 "</html>";
         headers.addHeader("Content-Type", "text/html");
@@ -115,7 +115,7 @@ public class Template {
         String html_302 = "<html>\n" +
                 "<head><title>302 Found</title></head>\n" +
                 "<body bgcolor=\"white\">\n" +
-                "<center><h1>302 Found</h1><h6>simple http-server<h6></center>\n" +
+                "<center><h1>302 Found</h1><h6>Simple AIO Http-Server<h6></center>\n" +
                 "</body>\n" +
                 "</html>";
         headers.addHeader("Content-Type", "text/html");
