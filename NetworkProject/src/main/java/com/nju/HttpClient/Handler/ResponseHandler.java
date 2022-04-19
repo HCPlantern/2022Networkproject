@@ -37,7 +37,7 @@ public class ResponseHandler implements Handler {
     public HttpResponse handle(HttpRequest httpRequest, InputStream inputStream) {
         ResponseLine responseLine = parseResponseLine(inputStream);
         MessageHeader messageHeader = parseMessageHeader(inputStream);
-        MessageEntityBody messageEntityBody = parseMessageEntityBody(inputStream);
+        MessageEntityBody messageEntityBody = parseMessageEntityBody(inputStream, messageHeader);
         HttpResponse httpResponse = new HttpResponse(responseLine, messageHeader, messageEntityBody);
         int statusCode = responseLine.getStatusCode();
         if (statusCode == StatusCode.OK) {
@@ -129,11 +129,14 @@ public class ResponseHandler implements Handler {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        String[] splitLine = line.split("\\s+");
-        if (splitLine.length != 3) {
-            throw new IllegalArgumentException("Illegal response line format.");
-        }
-        return new ResponseLine(splitLine[0], Integer.parseInt(splitLine[1]), splitLine[2]);
+        assert line != null;
+        int firstBlank = line.indexOf(" ");
+        String firstStr = line.substring(0, firstBlank).trim();
+        int secondBlank = line.indexOf(" ", firstBlank + 1);
+        String secondStr = line.substring(firstBlank + 1, secondBlank).trim();
+        String thirdStr = line.substring(secondBlank + 1).trim();
+
+        return new ResponseLine(firstStr, Integer.parseInt(secondStr), thirdStr);
     }
 
     @Override
@@ -155,22 +158,26 @@ public class ResponseHandler implements Handler {
                 return header;
             }
 
-            splitLine = line.split(":\\s*");
-            if (splitLine.length != 2) throw new IllegalArgumentException("Illegal message header format.");
-            header.putField(splitLine[0], splitLine[1]);
+            int splitIndex = line.indexOf(":");
+            if (splitIndex == -1) throw new IllegalArgumentException("Illegal message header format.");
+            header.putField(line.substring(0, splitIndex).trim(), line.substring(splitIndex + 1).trim());
         }
     }
 
     @Override
-    public MessageEntityBody parseMessageEntityBody(InputStream inputStream) {
+    public MessageEntityBody parseMessageEntityBody(InputStream inputStream, MessageHeader header) {
         MessageEntityBody body;
+        String contentLenStr = header.getFieldValue(HeaderFields.Content_Length);
         try {
-            body = new MessageEntityBody(inputStream.readAllBytes());
+            if (contentLenStr != null) {
+                body = new MessageEntityBody(inputStream.readNBytes(Integer.parseInt(contentLenStr)));
+            } else {
+                return null;
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         return body;
     }
-
 
 }

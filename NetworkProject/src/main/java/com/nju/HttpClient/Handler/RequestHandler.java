@@ -86,7 +86,7 @@ public class RequestHandler implements Handler {
         return null;
     }
     @Override
-    public MessageEntityBody parseMessageEntityBody(InputStream inputStream) {
+    public MessageEntityBody parseMessageEntityBody(InputStream inputStream, MessageHeader header) {
         return null;
     }
 }

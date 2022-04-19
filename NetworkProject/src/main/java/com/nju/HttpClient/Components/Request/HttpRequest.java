@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.nio.charset.StandardCharsets;
+
 // http请求报文
 @Data
 @AllArgsConstructor
@@ -17,14 +19,14 @@ public class HttpRequest {
     private MessageHeader requestHeader;
     private MessageEntityBody requestEntityBody;
 
-    public String toString(){
-        StringBuilder requestMessage=new StringBuilder();
+    public String toString() {
+        StringBuilder requestMessage = new StringBuilder();
         requestMessage.append(requestLine.toString()).append(requestHeader.toString()).append("\r\n").append(requestEntityBody.toString(requestHeader.getFieldValue(HeaderFields.Content_Type)));
-        return null;
+        return requestMessage.toString();
     }
 
-    public byte[] toBytes(){
-        return null;
+    public byte[] toBytes() {
+        return toString().getBytes(StandardCharsets.UTF_8);
     }
 }
 

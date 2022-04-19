@@ -7,5 +7,5 @@ import java.io.InputStream;
 
 public interface Handler {
     public MessageHeader parseMessageHeader(InputStream inputStream);
-    public MessageEntityBody parseMessageEntityBody(InputStream inputStream);
+    public MessageEntityBody parseMessageEntityBody(InputStream inputStream, MessageHeader header);
 }
