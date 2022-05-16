@@ -59,7 +59,9 @@ public class ResponseHandler implements Handler {
         MessageHeader responseHeader = httpResponse.getResponseHeader();
         Long timeStamp;
         try {
-            timeStamp = TimeTransformer.getTimestamp(responseHeader.getFieldValue(HeaderFields.Last_Modified));
+            String lastModified = responseHeader.getFieldValue(HeaderFields.Last_Modified);
+            if (lastModified == null) return;
+            timeStamp = TimeTransformer.getTimestamp(lastModified);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

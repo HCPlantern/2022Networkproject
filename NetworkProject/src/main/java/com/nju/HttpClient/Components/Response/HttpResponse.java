@@ -4,6 +4,7 @@ package com.nju.HttpClient.Components.Response;
 import com.nju.HttpClient.Components.Common.HeaderFields;
 import com.nju.HttpClient.Components.Common.MessageEntityBody;
 import com.nju.HttpClient.Components.Common.MessageHeader;
+import com.nju.HttpClient.Components.Request.HttpRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

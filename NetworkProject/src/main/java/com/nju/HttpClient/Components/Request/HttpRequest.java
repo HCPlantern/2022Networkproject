@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 // http请求报文
@@ -19,6 +21,11 @@ public class HttpRequest {
     private MessageHeader requestHeader;
     private MessageEntityBody requestEntityBody;
 
+    public HttpRequest (InputStream inputStream) throws IOException {
+        this.requestLine = new RequestLine(inputStream);
+        this.requestHeader = new MessageHeader(inputStream);
+        this.requestEntityBody = new MessageEntityBody(inputStream);
+    }
     public String toString() {
         StringBuilder requestMessage = new StringBuilder();
         requestMessage.append(requestLine.toString()).append(requestHeader.toString()).append("\r\n").append(requestEntityBody.toString(requestHeader.getFieldValue(HeaderFields.Content_Type)));

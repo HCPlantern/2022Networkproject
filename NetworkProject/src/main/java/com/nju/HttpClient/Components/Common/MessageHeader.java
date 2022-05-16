@@ -1,9 +1,12 @@
 package com.nju.HttpClient.Components.Common;
 
+import com.nju.HttpClient.Utils.InputStreamReaderHelper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -15,6 +18,19 @@ public class MessageHeader {
     //    用一个HashMap存储报文头部
 
     private HashMap<String, String> headers=new LinkedHashMap<>();
+
+    public MessageHeader(InputStream inputStream) throws IOException {
+        String line;
+        while (true) {
+            line = InputStreamReaderHelper.readLine(inputStream);
+            if (line == null || "".equals(line)) {
+                break;
+            }
+            String[] keyValue = line.split(":");
+            headers.put(keyValue[0].trim(), keyValue[1].trim());
+        }
+
+    }
 
     public void putField(String fieldName,String fieldValue) {
         headers.put(fieldName,fieldValue);

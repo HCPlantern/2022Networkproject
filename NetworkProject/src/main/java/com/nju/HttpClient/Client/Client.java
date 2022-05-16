@@ -28,7 +28,7 @@ public class Client {
 
     //    客户端的构造函数
 //    参数是需要连接的远程主机的地址和端口
-    public Client() throws IOException {
+    public Client() {
         this.socketPool = new SocketPool(new HashMap<>());
         this.lastModifiedResourceCache = new LastModifiedResourceCache(new HashMap<>());
         this.redirectResourceCache = new RedirectResourceCache(new HashMap<>());
