@@ -94,12 +94,19 @@ public class ResponseHandler implements Handler {
     //TODO: 对于302的处理(暂时重定向，不需要更新redirectCache，需要重构请求报文，重新发送报文)
     public HttpResponse handle302(HttpRequest httpRequest, HttpResponse httpResponse) {
         String newPath = httpResponse.getResponseHeader().getFieldValue(HeaderFields.Location);
+        if (newPath.matches("(http)|(https)://.*")) {
+            String[] temp = newPath.split("://");
+            newPath = temp[1];
+            if (newPath.endsWith("/")) {
+                // remove '/' at the end
+                newPath = newPath.substring(0, newPath.length() - 1);
+            }
+        }
         assert (newPath != null);
-        RequestLine oldRequestLine = httpRequest.getRequestLine();
-        RequestLine newRequestLine = new RequestLine(oldRequestLine.getMethod(), newPath, oldRequestLine.getVersion());
-        HttpRequest newHttpRequest = new HttpRequest(newRequestLine, httpRequest.getRequestHeader(), httpRequest.getRequestEntityBody());
+        MessageHeader header = httpRequest.getRequestHeader();
+        header.putField(HeaderFields.Host, newPath);
         // resent the new request.
-        return client.sendRequest(newHttpRequest);
+        return client.sendRequest(httpRequest);
     }
 
     // TODO: 对于304的处理(从lastModifiedResourceCache中获取数据部分就可以)
@@ -174,6 +181,7 @@ public class ResponseHandler implements Handler {
             if (contentLenStr != null) {
                 body = new MessageEntityBody(inputStream.readNBytes(Integer.parseInt(contentLenStr)));
             } else {
+                // TODO : gzip 格式
                 return null;
             }
         } catch (IOException e) {

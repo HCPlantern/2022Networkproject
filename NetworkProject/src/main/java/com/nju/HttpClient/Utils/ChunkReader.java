@@ -37,7 +37,7 @@ public class ChunkReader {
         return mergeBytes(buffer);
     }
 //    将各个分块的数据合并成完整的数据
-    public static byte[] mergeBytes(ArrayList<byte[]> bytes) {
+    private static byte[] mergeBytes(ArrayList<byte[]> bytes) {
         int length = 0;
         int index = 0;
         for(int i=0;i<bytes.size();i++){

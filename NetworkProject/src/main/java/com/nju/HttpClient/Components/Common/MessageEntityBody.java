@@ -1,6 +1,5 @@
 package com.nju.HttpClient.Components.Common;
 
-import com.nju.HttpClient.Utils.InputStreamReaderHelper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
