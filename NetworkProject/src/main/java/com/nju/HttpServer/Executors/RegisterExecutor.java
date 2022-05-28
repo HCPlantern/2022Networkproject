@@ -1,4 +1,4 @@
-package com.nju.HttpServer.Controller.Executors;
+package com.nju.HttpServer.Executors;
 
 import com.nju.HttpServer.Common.Template;
 import com.nju.HttpServer.Http.Components.Body;
@@ -9,7 +9,7 @@ import com.nju.HttpServer.Http.HttpResponse;
 import java.util.HashMap;
 
 public class RegisterExecutor implements Executor {
-    public static HashMap<String, String> db = new HashMap<>();
+    public static HashMap<String, String> db = new HashMap<>(); //静态HashMap保存用户名和密码
 
     public HttpResponse handle(HttpRequest request) throws Exception {
         HashMap<String, String> db = RegisterExecutor.db;

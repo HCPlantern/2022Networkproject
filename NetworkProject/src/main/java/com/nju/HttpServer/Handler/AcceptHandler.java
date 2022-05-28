@@ -31,7 +31,7 @@ public class AcceptHandler implements CompletionHandler<AsynchronousSocketChanne
         serverHandler.channel.accept(serverHandler, this);
 
         try {
-            logger.info("建立连接:" + channel.getRemoteAddress().toString() + ",hashcode:" + channel.hashCode());
+            logger.info("建立连接:address" + channel.getRemoteAddress().toString() + ", hashcode: " + channel.hashCode());
         } catch (Exception e) {
             logger.error(e);
         }
@@ -58,10 +58,10 @@ public class AcceptHandler implements CompletionHandler<AsynchronousSocketChanne
 
     /**
      * 调用此方法关闭channel!
-     * @exception: java.net.SocketException: Connection reset by peer: shutdown 超并发，系统主动关闭连接引起，不影响正常运行
      *
      * @param channel:要关闭的channel
      * @param logMsg:关闭channel时的日志
+     * @exception: java.net.SocketException: Connection reset by peer: shutdown 超并发，系统主动关闭连接引起，不影响正常运行
      **/
     public static void closeChannel(AsynchronousSocketChannel channel, String logMsg) {
         if (channel.isOpen()) {
@@ -69,11 +69,11 @@ public class AcceptHandler implements CompletionHandler<AsynchronousSocketChanne
 //                logger.debug(logMsg + "关闭channel输入输出流");
                 channel.shutdownInput();
                 channel.shutdownOutput();
-                logger.debug(logMsg + "关闭channel:" + channel.hashCode());
+                logger.debug(logMsg + "关闭channel, hashcode: " + channel.hashCode());
                 channel.close();
             } catch (IOException e) {
                 logger.warn(logMsg + "关闭channel时异常:" + channel.hashCode());
-                logger.error(e);
+//                logger.error(e);
             }
         }
     }

@@ -1,28 +1,29 @@
 package com.nju.HttpServer.Controller;
 
-import com.nju.HttpServer.Controller.Executors.ErrorExecutor;
-import com.nju.HttpServer.Controller.Executors.LoginExecutor;
-import com.nju.HttpServer.Controller.Executors.RegisterExecutor;
+import com.nju.HttpServer.Common.RequestMethod;
+import com.nju.HttpServer.Executors.ErrorExecutor;
+import com.nju.HttpServer.Executors.LoginExecutor;
+import com.nju.HttpServer.Executors.RegisterExecutor;
 import com.nju.HttpServer.Http.HttpRequest;
 import com.nju.HttpServer.Http.HttpResponse;
-import com.nju.HttpServer.Router.RouteMapping;
+import com.nju.HttpServer.Controller.Router.RequestMapping;
 
 /**
  * 手搓类Springboot风格的注解匹配器
  **/
 public class RequestMapper {
 
-    @RouteMapping(uri = "/login", method = "post")
+    @RequestMapping(uri = "/login", method = RequestMethod.POST)
     public HttpResponse Login(HttpRequest request) throws Exception {
         return new LoginExecutor().handle(request);
     }
 
-    @RouteMapping(uri = "/register", method = "post")
+    @RequestMapping(uri = "/register", method = RequestMethod.POST)
     public HttpResponse Register(HttpRequest request) throws Exception {
         return new RegisterExecutor().handle(request);
     }
 
-    @RouteMapping(uri = "/error", method = "get")
+    @RequestMapping(uri = "/error", method = RequestMethod.GET)
     public HttpResponse Error(HttpRequest request) throws Exception {
         return new ErrorExecutor().handle(request);
     }

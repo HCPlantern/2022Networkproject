@@ -2,13 +2,13 @@ package com.nju.HttpServer.Http.Components;
 
 import java.nio.charset.StandardCharsets;
 
-public class StartLine implements Component{
+public class StartLine implements Component {
     String method;
     String target;
     double version;
 
     public StartLine(String method, String target, double version) {
-        this.method = method;
+        this.method = method.toUpperCase();
         this.target = target;
         this.version = version;
     }
@@ -18,7 +18,7 @@ public class StartLine implements Component{
     }
 
     public void setMethod(String method) {
-        this.method = method;
+        this.method = method.toUpperCase();
     }
 
     public String getTarget() {
@@ -47,7 +47,7 @@ public class StartLine implements Component{
         return this.ToString().getBytes(StandardCharsets.UTF_8);
     }
 
-    public static StartLine String2StartLine(String s){
+    public static StartLine String2StartLine(String s) {
         String[] tmp = s.split("\\s+");
         double version = Double.parseDouble(tmp[2].split("/")[1]);
         return new StartLine(tmp[0], tmp[1], version);

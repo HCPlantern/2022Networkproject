@@ -1,4 +1,4 @@
-package com.nju.HttpServer.Controller.Executors;
+package com.nju.HttpServer.Executors;
 
 import com.nju.HttpServer.Http.HttpRequest;
 import com.nju.HttpServer.Http.HttpResponse;

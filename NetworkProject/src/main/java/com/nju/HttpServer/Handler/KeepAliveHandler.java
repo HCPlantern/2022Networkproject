@@ -26,7 +26,7 @@ public class KeepAliveHandler {
     public void setKeepAlive(AsynchronousSocketChannel channel) {
         //如果改channel已经被设置定时关闭，先关掉，并从timer队列里清除引用
         if (timerTaskHashMap.get(channel) != null) {
-            logger.debug("取消了一个已有的定时器");
+//            logger.debug("取消了一个已有的定时器");
             timerTaskHashMap.get(channel).cancel();
             timerTaskHashMap.remove(channel);
             SimpleServer.timer.purge();

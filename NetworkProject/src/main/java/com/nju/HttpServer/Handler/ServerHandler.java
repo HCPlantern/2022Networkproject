@@ -22,7 +22,7 @@ public class ServerHandler implements Runnable {
             channel = AsynchronousServerSocketChannel.open();
             //把本机地址绑定到Socket上
             channel.bind(new InetSocketAddress(port));
-            logger.info("服务端已启动，端口号：" + port);
+            logger.info("服务端已启动，端口号:" + port);
         } catch (IOException e) {
             e.printStackTrace();
         }
