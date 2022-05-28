@@ -18,6 +18,7 @@ public class SimpleServer {
     }
 
     public static void main(String[] args) {
+        System.setProperty("-Dlog4j.skipJansi", "false");
         SimpleServer server = new SimpleServer();
         //把RequestMapper里的注解匹配方法注册到router上
         router.addRouter("com.nju.HttpServer.Controller.RequestMapper");
