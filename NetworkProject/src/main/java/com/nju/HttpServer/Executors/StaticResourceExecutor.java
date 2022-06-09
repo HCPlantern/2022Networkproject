@@ -79,7 +79,7 @@ public class StaticResourceExecutor implements Executor {
         Util.targetToMIME(target, headers);
 
         //重定向静态资源路径到public文件夹
-        String path = "src/StaticResources" + target;
+        String path = "src/main/resources/StaticResources" + target;
 
         // add length
         File f = new File(path);

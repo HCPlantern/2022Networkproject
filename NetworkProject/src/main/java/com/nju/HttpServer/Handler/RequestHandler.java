@@ -13,7 +13,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
 
-/****
+/**
  * Integer:声明read操作返回的类型（读数据个数），为负数则读取失败
  * ByteBuffer:调用读操作传入的类型，针对read函数第一个buffer
  * channel:用户读取信息或者发送信息的channel

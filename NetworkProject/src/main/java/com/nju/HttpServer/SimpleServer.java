@@ -10,7 +10,7 @@ import java.util.Timer;
 public class SimpleServer {
     private static Logger logger = LogManager.getLogger(SimpleServer.class);
     //uri匹配器，负责匹配uri和对应的请求方法
-    public static Router router = new Router(System.getProperty("java.class.path"));
+    public static Router router = new Router();
     //timer 这个是后面配合timerTask 判断(关闭)长连接用的
     public static Timer timer = new Timer();
 
@@ -18,7 +18,6 @@ public class SimpleServer {
     }
 
     public static void main(String[] args) {
-        System.setProperty("-Dlog4j.skipJansi", "false");
         SimpleServer server = new SimpleServer();
         //把RequestMapper里的注解匹配方法注册到router上
         router.addRouter("com.nju.HttpServer.Controller.RequestMapper");

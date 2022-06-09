@@ -47,16 +47,8 @@ public class Router {
     }
 
     private static Logger logger = LogManager.getLogger(Router.class);
-    private ControllerLoader controllerLoader;
     private Map<String, Object> controllerBeans = new HashMap<String, Object>();
     private Map<String, HashMap<String, Action>> uri2Action = new HashMap<>(); //uri -> (requestMethod -> Action)
-
-    /**
-     * @param basePath:class文件所在的路径
-     */
-    public Router(String basePath) {
-        controllerLoader = new ControllerLoader(basePath);
-    }
 
     /**
      * 注册方法
@@ -66,7 +58,7 @@ public class Router {
     public void addRouter(String controllerClass) {
         try {
             // 加载class
-            Class<?> aClass = controllerLoader.loadClass(controllerClass);
+            Class<?> aClass = this.getClass().getClassLoader().loadClass(controllerClass);
 
             // 反射class中所有方法
             Method[] methods = aClass.getDeclaredMethods();
@@ -122,6 +114,5 @@ public class Router {
         }
         return response;
     }
-
 }
 

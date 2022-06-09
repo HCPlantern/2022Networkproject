@@ -9,7 +9,7 @@ import com.nju.HttpServer.Http.HttpResponse;
 import com.nju.HttpServer.Controller.Router.RequestMapping;
 
 /**
- * 手搓类Springboot风格的注解匹配器
+ * 类Springboot风格的注解匹配器,匹配规则：精确匹配
  **/
 public class RequestMapper {
 

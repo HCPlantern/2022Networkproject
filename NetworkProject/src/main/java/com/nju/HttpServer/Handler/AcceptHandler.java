@@ -12,7 +12,7 @@ import java.util.TimerTask;
 
 /**
  * AsynchronousSocketChannel:与客户端建立的连接
- * ServerHandler：为了继续异步与客户端建立连接，而传入的ServerHandler(八股，可以不用管)
+ * ServerHandler：为了继续异步与客户端建立连接，而传入的ServerHandler
  **/
 public class AcceptHandler implements CompletionHandler<AsynchronousSocketChannel, ServerHandler> {
     private static Logger logger = LogManager.getLogger(AcceptHandler.class);
@@ -21,7 +21,7 @@ public class AcceptHandler implements CompletionHandler<AsynchronousSocketChanne
      * 系统与客户端成功建立连接后，会自动调用completed()
      *
      * @param channel:与客户端成功建立的连接,系统给你的
-     * @param serverHandler:为了继续异步与客户端建立连接，而传入的ServerHandler(八股，可以不用管)
+     * @param serverHandler:为了继续异步与客户端建立连接，而传入的ServerHandler
      **/
     @Override
     public void completed(AsynchronousSocketChannel channel, ServerHandler serverHandler) {
@@ -61,7 +61,7 @@ public class AcceptHandler implements CompletionHandler<AsynchronousSocketChanne
      *
      * @param channel:要关闭的channel
      * @param logMsg:关闭channel时的日志
-     * @exception: java.net.SocketException: Connection reset by peer: shutdown 超并发，系统主动关闭连接引起，不影响正常运行
+     * @exception: java.net.SocketException: Connection reset by peer: shutdown 超并发，系统主动关闭连接引起
      **/
     public static void closeChannel(AsynchronousSocketChannel channel, String logMsg) {
         if (channel.isOpen()) {
