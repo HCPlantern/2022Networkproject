@@ -86,10 +86,10 @@ public class StaticResourceExecutor implements Executor {
         headers.addHeader("Content-Length", Long.toString(f.length()));
 
         // add last modified
-        Date fileLastModifiedTime = new Date(f.lastModified());
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm:ss z", Locale.ENGLISH);
         sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-//      logger.debug(sdf.format(fileLastModifiedTime));
+        Date fileLastModifiedTime = new Date(f.lastModified());
+        fileLastModifiedTime = sdf.parse(sdf.format(fileLastModifiedTime)); //去精取粗,用字符串构造,去除毫秒信息
         headers.addHeader("Last-Modified", sdf.format(fileLastModifiedTime));
 
         //这边要判断一下是不是304：如果请求的资源的修改日期是最新的（即文件没改过），就返回304
@@ -101,10 +101,11 @@ public class StaticResourceExecutor implements Executor {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            if (Limit.compareTo(fileLastModifiedTime) > 0) {
+            if (Limit.compareTo(fileLastModifiedTime) >= 0) {
                 return Template.generateStatusCode_304();
             }
         }
+
 //      不符合304，则要从服务端把资源写到body里给客户端
         byte[] bytesArray = new byte[(int) f.length()];
         try {
