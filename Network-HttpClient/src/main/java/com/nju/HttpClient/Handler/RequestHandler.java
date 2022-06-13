@@ -41,6 +41,8 @@ public class RequestHandler implements Handler {
             boolean isChunked = "chunked".equals(requestMessage.getRequestHeader().getFieldValue(HeaderFields.Transfer_Encoding));
             if (!isChunked) {
                 requestMessage.getRequestHeader().putField("content-length", requestMessage.getRequestEntityBody().toBytes().length + "");
+                // TODO
+                System.out.println("Add content-length");
             }
         }
 //      这边的顺序有没有影响? 是先找重定向的还是先找last-modified?
@@ -64,6 +66,10 @@ public class RequestHandler implements Handler {
             String newPath = newURI.getPath();
             requestMessage.getRequestLine().setRequestURL(newPath);
             requestMessage.getRequestHeader().putField(HeaderFields.Host, newHost);
+            // TODO
+            System.out.println("Find redirect URI cache");
+            System.out.println("Old URI: " + oldURI.toString());
+            System.out.println("New URI: " + newURI.toString());
         }
         return requestMessage;
     }
@@ -77,6 +83,9 @@ public class RequestHandler implements Handler {
         if (localResource != null) {
             Long timeStap = localResource.getTimeStamp();
             requestMessage.getRequestHeader().putField(HeaderFields.If_Modified_Since, TimeTransformer.toTimeString(timeStap));
+            // TODO
+            System.out.println("Find local resource");
+            System.out.println("Add "+ HeaderFields.If_Modified_Since);
         }
         return requestMessage;
     }

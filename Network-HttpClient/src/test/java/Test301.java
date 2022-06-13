@@ -27,7 +27,6 @@ public class Test301 {
         MessageEntityBody body = new MessageEntityBody();
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, body);
         HttpResponse httpResponse = client.sendRequest(httpRequest);
-        System.out.println(httpRequest);
         if (savePath != null) {
             try {
                 httpRequest.getRequestEntityBody().save(savePath);

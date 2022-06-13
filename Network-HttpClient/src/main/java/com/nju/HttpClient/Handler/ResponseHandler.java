@@ -59,6 +59,8 @@ public class ResponseHandler implements Handler {
 
     //TODO: 对于响应码是200的处理(只需要将资源存到cache里就可以)
     public void handle200(HttpRequest httpRequest, HttpResponse httpResponse) {
+        // TODO
+        System.out.println("Get return status code: 200");
         MessageHeader responseHeader = httpResponse.getResponseHeader();
         Long timeStamp;
         try {
@@ -71,37 +73,52 @@ public class ResponseHandler implements Handler {
         LocalResource resource = new LocalResource(timeStamp, httpResponse.getResponseEntityBody(), responseHeader.getFieldValue(HeaderFields.Content_Type));
         URI uri = getRequestUri(httpRequest);
         lastModifiedResourceCache.addModifiedLocalResource(uri, resource);
+        System.out.println("Save local resource");
+        System.out.println("URI: " + uri.toString());
     }
 
     //TODO: 对于301的处理(永久重定向，需要更新redirectCache并且重构请求报文，重新发送报文)
     public HttpResponse handle301(HttpRequest httpRequest, HttpResponse httpResponse) {
+        // TODO
+        System.out.println("Get status code 301");
+        System.out.println("ResponseLine: " + httpResponse.getResponseLine());
         String newPath = httpResponse.getResponseHeader().getFieldValue(HeaderFields.Location);
         assert (newPath != null);
         // get new URI
         URI oldUri = getRequestUri(httpRequest);
         URI newUri = UriHelper.createUri(oldUri.getScheme(), oldUri.getHost(), oldUri.getPort(), newPath);
         redirectResourceCache.setNewUri(oldUri, newUri);
+        System.out.println("Add redirect resource cache, URI: " + newUri.toString());
+
         // create new http request
         RequestLine oldRequestLine = httpRequest.getRequestLine();
         RequestLine newRequestLine = new RequestLine(oldRequestLine.getMethod(), newPath, oldRequestLine.getVersion());
         HttpRequest newHttpRequest = new HttpRequest(newRequestLine, httpRequest.getRequestHeader(), httpRequest.getRequestEntityBody());
         // resent the new request
+        System.out.println("Send new http request");
         return client.sendRequest(newHttpRequest);
     }
 
     //TODO: 对于302的处理(暂时重定向，不需要更新redirectCache，需要重构请求报文，重新发送报文)
     public HttpResponse handle302(HttpRequest httpRequest, HttpResponse httpResponse) {
+        // TODO
+        System.out.println("Get status code 302");
+        System.out.println("ResponseLine: " + httpResponse.getResponseLine());
         String newPath = httpResponse.getResponseHeader().getFieldValue(HeaderFields.Location);
+        System.out.println("Get temporary redirect path: " + newPath.toString());
         assert (newPath != null);
         RequestLine requestLine = httpRequest.getRequestLine();
         requestLine.setRequestURL(newPath);
         // resent the new request.
+        System.out.println("Send new http request");
         return client.sendRequest(httpRequest);
     }
 
     // TODO: 对于304的处理(从lastModifiedResourceCache中获取数据部分就可以)
     // In this case, httpResponse should be null. Check cache and set response body, then return.
     public HttpResponse handle304(HttpRequest httpRequest, HttpResponse httpResponse) {
+        System.out.println("Get status code 304");
+        System.out.println("ResponseLine: " + httpResponse.getResponseLine());
         URI uri = getRequestUri(httpRequest);
         MessageEntityBody body = lastModifiedResourceCache.getModifiedLocalResource(uri).getMessageEntityBody();
         httpResponse.setResponseEntityBody(body);
@@ -159,24 +176,24 @@ public class ResponseHandler implements Handler {
 
     @Override
     public MessageEntityBody parseMessageEntityBody(InputStream inputStream, MessageHeader header) {
-        byte[] b=new byte[0];
+        byte[] b = new byte[0];
         MessageEntityBody body;
         String contentLenStr = header.getFieldValue(HeaderFields.Content_Length);
-        String transferEncoding=header.getFieldValue(HeaderFields.Transfer_Encoding);
+        String transferEncoding = header.getFieldValue(HeaderFields.Transfer_Encoding);
         try {
-            if(transferEncoding!=null&&transferEncoding.equals("chunked")){
+            if (transferEncoding != null && transferEncoding.equals("chunked")) {
                 b = ChunkReader.readChunk(inputStream);
                 // Content-Encoding: gzip 解压缩
                 String contentEncoding = header.getFieldValue(HeaderFields.Content_Encoding);
-                if(contentEncoding!=null&&contentEncoding.equals("gzip")){
+                if (contentEncoding != null && contentEncoding.equals("gzip")) {
                     GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(b));
                     b = InputStreamReaderHelper.readInputStream(gzipInputStream);
                 }
-            }else if(contentLenStr!=null){
+            } else if (contentLenStr != null) {
                 int length = Integer.parseInt(contentLenStr);
-                b = ByteReader.readByte(inputStream,length);
+                b = ByteReader.readByte(inputStream, length);
             }
-            body=new MessageEntityBody(b);
+            body = new MessageEntityBody(b);
 //            if (contentLenStr != null) {
 ////                body=new MessageEntityBody(b);
 //                body = new MessageEntityBody(inputStream.readNBytes(Integer.parseInt(contentLenStr)));
