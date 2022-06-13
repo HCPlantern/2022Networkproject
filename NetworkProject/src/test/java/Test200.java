@@ -30,7 +30,5 @@ public class Test200 {
         HttpResponse httpResponse = client.sendRequest(httpRequest);
         System.out.println(httpResponse.toString());
     }
-
-
 }
 
