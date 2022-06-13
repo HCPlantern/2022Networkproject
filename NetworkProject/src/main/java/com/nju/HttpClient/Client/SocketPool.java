@@ -33,6 +33,7 @@ public class SocketPool {
             if (clientSocket.isClosed()) {
                 clientsocketHashMap.remove(host);
             } else {
+                System.out.println("复用连接");
                 return clientSocket;
             }
         }
@@ -45,6 +46,7 @@ public class SocketPool {
         clientSocket.setKeepAlive(isKeepAlive);
 
         clientsocketHashMap.put(host, clientSocket);
+        System.out.println("新建连接");
         return clientSocket;
     }
     public void removeSocket(String host) throws IOException {

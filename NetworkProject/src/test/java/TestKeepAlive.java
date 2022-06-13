@@ -6,6 +6,7 @@ import com.nju.HttpClient.Components.Request.HttpRequest;
 import com.nju.HttpClient.Components.Request.Method;
 import com.nju.HttpClient.Components.Request.RequestLine;
 import com.nju.HttpClient.Components.Response.HttpResponse;
+import org.junit.Test;
 
 public class TestKeepAlive {
     private Client client=new Client();
@@ -26,19 +27,12 @@ public class TestKeepAlive {
             e.printStackTrace();
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Test
+    public void testKeepAlive(){
+        request("src/main/resources/StaticResources/favicon.ico",false);
+        request("src/main/resources/StaticResources/favicon.ico",false);
+        request("src/main/resources/StaticResources/favicon.ico",false);
+        request("src/main/resources/StaticResources/favicon.ico",true);
+        request("src/main/resources/StaticResources/favicon.ico",true);
+    }
 }
