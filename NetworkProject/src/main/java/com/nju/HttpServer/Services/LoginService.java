@@ -1,25 +1,25 @@
-package com.nju.HttpServer.Executors;
+package com.nju.HttpServer.Services;
 
 import com.nju.HttpServer.Common.Template;
 import com.nju.HttpServer.Http.Components.Body;
 import com.nju.HttpServer.Http.Components.Headers;
+import com.nju.HttpServer.Http.Components.StatusLine;
 import com.nju.HttpServer.Http.HttpRequest;
 import com.nju.HttpServer.Http.HttpResponse;
 
 import java.util.HashMap;
 
-public class RegisterExecutor implements Executor {
-    public static HashMap<String, String> db = new HashMap<>(); //静态HashMap保存用户名和密码
+public class LoginService implements Service {
 
     public HttpResponse handle(HttpRequest request) throws Exception {
-        HashMap<String, String> db = RegisterExecutor.db;
+        HashMap<String, String> db = RegisterService.db;
         HttpResponse response = null;
         Headers headers = request.getHeaders();
         String contentType = headers.getValue("Content-Type").split(";")[0].trim();
         Body body = request.getBody();
 
         if (!contentType.equals("application/x-www-form-urlencoded")) {
-            response = Template.generateStatusCode_405();
+            response = new HttpResponse(new StatusLine(1.1, 400, "Bad Request"), new Headers(), new Body());
             return response;
         }
 
@@ -37,14 +37,14 @@ public class RegisterExecutor implements Executor {
             }
         }
         if (username == null || password == null) {
-            response = Template.generateStatusCode_405();
+            response = new HttpResponse(new StatusLine(1.1, 400, "Bad Request"), new Headers(), new Body());
         } else {
-            if (!db.containsKey(username)) {
-                db.put(username, password);
-                String hint = "You have successfully register!";
+
+            if (db.containsKey(username) && db.get(username).equals(password)) {
+                String hint = "You have successfully login in!";
                 response = Template.generateStatusCode_200(hint);
             } else {
-                String hint = "You have successfully register!";
+                String hint = "login failed";
                 response = Template.generateStatusCode_200(hint);
             }
         }

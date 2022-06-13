@@ -2,9 +2,9 @@ package com.nju.HttpServer.Controller;
 
 import com.nju.HttpServer.Common.RequestMethod;
 import com.nju.HttpServer.Common.Template;
-import com.nju.HttpServer.Executors.ErrorExecutor;
-import com.nju.HttpServer.Executors.LoginExecutor;
-import com.nju.HttpServer.Executors.RegisterExecutor;
+import com.nju.HttpServer.Services.ErrorService;
+import com.nju.HttpServer.Services.LoginService;
+import com.nju.HttpServer.Services.RegisterService;
 import com.nju.HttpServer.Http.HttpRequest;
 import com.nju.HttpServer.Http.HttpResponse;
 import com.nju.HttpServer.Controller.Router.RequestMapping;
@@ -20,16 +20,16 @@ public class RequestMapper {
 
     @RequestMapping(uri = "/login", method = RequestMethod.POST)
     public HttpResponse Login(HttpRequest request) throws Exception {
-        return new LoginExecutor().handle(request);
+        return new LoginService().handle(request);
     }
 
     @RequestMapping(uri = "/register", method = RequestMethod.POST)
     public HttpResponse Register(HttpRequest request) throws Exception {
-        return new RegisterExecutor().handle(request);
+        return new RegisterService().handle(request);
     }
 
     @RequestMapping(uri = "/error", method = RequestMethod.GET)
     public HttpResponse Error(HttpRequest request) throws Exception {
-        return new ErrorExecutor().handle(request);
+        return new ErrorService().handle(request);
     }
 }

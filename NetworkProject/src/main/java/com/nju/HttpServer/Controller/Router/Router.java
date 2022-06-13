@@ -2,7 +2,7 @@ package com.nju.HttpServer.Controller.Router;
 
 import com.nju.HttpServer.Common.RequestMethod;
 import com.nju.HttpServer.Common.Template;
-import com.nju.HttpServer.Executors.StaticResourceExecutor;
+import com.nju.HttpServer.Services.StaticResourceService;
 import com.nju.HttpServer.Http.HttpRequest;
 import com.nju.HttpServer.Http.HttpResponse;
 import org.apache.logging.log4j.LogManager;
@@ -96,9 +96,9 @@ public class Router {
         String uri = request.getStartLine().getTarget();
         String method = request.getStartLine().getMethod();
 //      最先把静态资源请求处理掉！
-        if (StaticResourceExecutor.isStaticTarget(uri)) {
+        if (StaticResourceService.isStaticTarget(uri)) {
             //如果请求的uri对了，但方法错了，响应405
-            response = method.equals(RequestMethod.GET) ? new StaticResourceExecutor().handle(request) : Template.generateStatusCode_405();
+            response = method.equals(RequestMethod.GET) ? new StaticResourceService().handle(request) : Template.generateStatusCode_405();
         } else {
             //非静态资源，使用注解匹配反射，参见RequestMapper
             HashMap<String, Action> method2Action = uri2Action.get(uri);

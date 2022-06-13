@@ -1,6 +1,5 @@
 package com.nju.HttpServer.Handler;
 
-import com.nju.HttpServer.SimpleServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,7 +7,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
 import java.nio.channels.CompletionHandler;
-import java.util.TimerTask;
 
 /**
  * AsynchronousSocketChannel:与客户端建立的连接

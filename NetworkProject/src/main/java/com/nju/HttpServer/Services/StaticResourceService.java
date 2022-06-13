@@ -1,4 +1,4 @@
-package com.nju.HttpServer.Executors;
+package com.nju.HttpServer.Services;
 
 import com.nju.HttpServer.Common.StatusCode;
 import com.nju.HttpServer.Common.Template;
@@ -23,8 +23,8 @@ import java.util.TimeZone;
  * 什么是静态资源：
  * 静态资源是指在不同请求中访问到的数据都相同的静态文件。例如：图片、视频、网站中的文件（html、css、js）、软件安装包、apk文件、压缩包文件等
  **/
-public class StaticResourceExecutor implements Executor {
-    private static Logger logger = LogManager.getLogger(StaticResourceExecutor.class);
+public class StaticResourceService implements Service {
+    private static Logger logger = LogManager.getLogger(StaticResourceService.class);
     /*
      * 永久移动的资源 对应状态码301
      * 301 Moved Permanently 永久移动。是指请求的资源已被永久的移动到新的URL，返回信息会包括新的URL，浏览器还会自动定向到新的URL。今后任何新的请求都应该使用新的URL来代替
@@ -41,7 +41,7 @@ public class StaticResourceExecutor implements Executor {
      */
     public static HashMap<String, String> ModifiedTime = new HashMap<>();
 
-    public StaticResourceExecutor() {
+    public StaticResourceService() {
         MovedPermanentlyResource.put("/movedPic.png", "/pic.png");
         MovedPermanentlyResource.put("/movedIndex.html", "/index.html");
         MovedTemporarilyResource.put("/movedPic2.png", "/pic.png");

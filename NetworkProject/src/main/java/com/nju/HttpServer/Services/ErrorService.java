@@ -1,10 +1,10 @@
-package com.nju.HttpServer.Executors;
+package com.nju.HttpServer.Services;
 
 import com.nju.HttpServer.Http.HttpRequest;
 import com.nju.HttpServer.Http.HttpResponse;
 
 
-public class ErrorExecutor implements Executor {
+public class ErrorService implements Service {
     public HttpResponse handle(HttpRequest request) throws Exception {
         // do something bad
         // 返回500页面
