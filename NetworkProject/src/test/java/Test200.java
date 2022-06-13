@@ -10,6 +10,8 @@ import com.nju.HttpClient.Components.Response.HttpResponse;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+
 public class Test200 {
 
     Client client;
@@ -25,7 +27,7 @@ public class Test200 {
      *
      */
     @Test
-    public void testMain() {
+    public void testMain() throws IOException {
         RequestLine requestLine = new RequestLine(Method.GET, "/");
         MessageHeader messageHeader = new MessageHeader();
         messageHeader.putField(HeaderFields.Host, "www.baidu.com");
@@ -35,6 +37,7 @@ public class Test200 {
         MessageEntityBody messageBody = new MessageEntityBody();
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, messageBody);
         HttpResponse httpResponse = client.sendRequest(httpRequest);
+        httpResponse.saveBody("baidu.html");
         System.out.println(httpResponse.toString());
     }
 }
