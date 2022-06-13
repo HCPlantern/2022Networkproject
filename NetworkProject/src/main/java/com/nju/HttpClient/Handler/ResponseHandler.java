@@ -91,8 +91,8 @@ public class ResponseHandler implements Handler {
     public HttpResponse handle302(HttpRequest httpRequest, HttpResponse httpResponse) {
         String newPath = httpResponse.getResponseHeader().getFieldValue(HeaderFields.Location);
         assert (newPath != null);
-        MessageHeader header = httpRequest.getRequestHeader();
-        header.putField(HeaderFields.Host, newPath);
+        RequestLine requestLine = httpRequest.getRequestLine();
+        requestLine.setRequestURL(newPath);
         // resent the new request.
         return client.sendRequest(httpRequest);
     }
