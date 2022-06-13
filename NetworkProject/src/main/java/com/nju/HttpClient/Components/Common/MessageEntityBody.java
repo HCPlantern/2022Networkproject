@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -42,5 +43,13 @@ public class MessageEntityBody {
     public byte[] toBytes() {
         return body;
     }
+    public void save(String path)throws IOException{
+        FileOutputStream fos=new FileOutputStream(path);
+        fos.write(body);
+        fos.close();
+    }
+
+
+
 }
 

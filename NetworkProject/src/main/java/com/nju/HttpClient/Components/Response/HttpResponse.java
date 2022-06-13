@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.IOException;
+
 // http响应报文
 @Data
 @AllArgsConstructor
@@ -27,4 +29,11 @@ public class HttpResponse {
     public byte[] toBytes(){
         return null;
     }
+
+    public void saveBody(String path)throws IOException{
+        responseEntityBody.save(path);
+    }
+
+
+
 }
