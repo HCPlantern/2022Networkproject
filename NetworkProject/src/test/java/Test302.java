@@ -19,7 +19,7 @@ public class Test302 {
         client = new Client();
     }
 
-    private void sendRequest(String path) throws IOException {
+    private void sendRequest(String path,String savePath) throws IOException {
         RequestLine requestLine = new RequestLine(Method.GET, path);
         MessageHeader messageHeader = new MessageHeader();
         messageHeader.putField(HeaderFields.Host, "localhost:5000");
@@ -29,24 +29,32 @@ public class Test302 {
         HttpResponse httpResponse = client.sendRequest(httpRequest);
         System.out.println(httpRequest);
         System.out.println(httpResponse);
-        httpResponse.saveBody(path.substring(1));
+        if (savePath != null) {
+            try {
+                httpResponse.saveBody(savePath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            System.out.println(httpResponse);
+        }
     }
 
     @Test
     public void test1() throws IOException {
-        sendRequest("/movedIndex2.html");
-        sendRequest("/movedIndex2.html");
+        sendRequest("/movedIndex2.html","movedIndex2.html");
+        sendRequest("/movedIndex2.html","movedIndex2.html");
     }
 
     @Test
     public void test2() throws IOException {
-        sendRequest("/movedPic2.png");
-        sendRequest("/movedPic2.png");
+        sendRequest("/movedPic2.png","movedPic2.png");
+        sendRequest("/movedPic2.png","movedPic2.png");
     }
 
     @Test
     public void test3() throws IOException {
-        sendRequest("/movedPic2.jpg");
-        sendRequest("/movedPic2.jpg");
+        sendRequest("/movedPic2.jpg","movedPic2.jpg");
+        sendRequest("/movedPic2.jpg","movedPic2.jpg");
     }
 }

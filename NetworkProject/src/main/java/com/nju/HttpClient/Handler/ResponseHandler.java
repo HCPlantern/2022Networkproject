@@ -13,18 +13,18 @@ import com.nju.HttpClient.Components.Response.StatusCode;
 import com.nju.HttpClient.LocalCache.LastModifiedResourceCache;
 import com.nju.HttpClient.LocalCache.LocalResource;
 import com.nju.HttpClient.LocalCache.RedirectResourceCache;
-import com.nju.HttpClient.Utils.InputStreamReaderHelper;
-import com.nju.HttpClient.Utils.TimeTransformer;
-import com.nju.HttpClient.Utils.UriHelper;
+import com.nju.HttpClient.Utils.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
+import java.util.zip.GZIPInputStream;
 
 @Data
 @AllArgsConstructor
@@ -40,6 +40,8 @@ public class ResponseHandler implements Handler {
         MessageHeader messageHeader = parseMessageHeader(inputStream);
         MessageEntityBody messageEntityBody = parseMessageEntityBody(inputStream, messageHeader);
         HttpResponse httpResponse = new HttpResponse(responseLine, messageHeader, messageEntityBody);
+        System.out.println(httpResponse);
+        System.out.println();
         int statusCode = responseLine.getStatusCode();
         if (statusCode == StatusCode.OK) {
             handle200(httpRequest, httpResponse);
@@ -157,15 +159,36 @@ public class ResponseHandler implements Handler {
 
     @Override
     public MessageEntityBody parseMessageEntityBody(InputStream inputStream, MessageHeader header) {
+        byte[] b=new byte[0];
         MessageEntityBody body;
         String contentLenStr = header.getFieldValue(HeaderFields.Content_Length);
+        String transferEncoding=header.getFieldValue(HeaderFields.Transfer_Encoding);
         try {
-            if (contentLenStr != null) {
-                body = new MessageEntityBody(inputStream.readNBytes(Integer.parseInt(contentLenStr)));
-            } else {
-                // TODO : gzip 格式
-                return null;
+            if(transferEncoding!=null&&transferEncoding.equals("chunked")){
+                b = ChunkReader.readChunk(inputStream);
+                // Content-Encoding: gzip 解压缩
+                String contentEncoding = header.getFieldValue(HeaderFields.Content_Encoding);
+                if(contentEncoding!=null&&contentEncoding.equals("gzip")){
+                    GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(b));
+                    b = InputStreamReaderHelper.readInputStream(gzipInputStream);
+                }
+            }else if(contentLenStr!=null){
+                int length = Integer.parseInt(contentLenStr);
+                b = ByteReader.readByte(inputStream,length);
             }
+            body=new MessageEntityBody(b);
+//            if (contentLenStr != null) {
+////                body=new MessageEntityBody(b);
+//                body = new MessageEntityBody(inputStream.readNBytes(Integer.parseInt(contentLenStr)));
+//            } else {
+//                // TODO : gzip 格式
+//
+//
+//
+//
+//
+//                return null;
+//            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -8,9 +8,11 @@ import com.nju.HttpClient.Components.Request.RequestLine;
 import com.nju.HttpClient.Components.Response.HttpResponse;
 import org.junit.Test;
 
+import java.io.IOException;
+
 public class TestKeepAlive {
     private Client client=new Client();
-    private void request(String path,boolean enableAlive){
+    private void sendRequest(String path,boolean enableAlive,String savePath){
         RequestLine requestLine=new RequestLine(Method.GET,path);
         MessageHeader messageHeader=new MessageHeader();
         messageHeader.putField(HeaderFields.Host,"localhost:5000");
@@ -22,17 +24,26 @@ public class TestKeepAlive {
         HttpRequest httpRequest=new HttpRequest(requestLine,messageHeader,messageEntityBody);
         try {
             HttpResponse response=client.sendRequest(httpRequest);
-            response.saveBody(path);
+            if (savePath != null) {
+                try {
+                    response.saveBody(savePath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                System.out.println(response);
+            }
+
         }catch (Exception e){
             e.printStackTrace();
         }
     }
     @Test
     public void testKeepAlive(){
-        request("src/main/resources/StaticResources/favicon.ico",false);
-        request("src/main/resources/StaticResources/favicon.ico",false);
-        request("src/main/resources/StaticResources/favicon.ico",false);
-        request("src/main/resources/StaticResources/favicon.ico",true);
-        request("src/main/resources/StaticResources/favicon.ico",true);
+        sendRequest("/favicon.ico",false,"favicon.ico");
+        sendRequest("/favicon.ico",false,"favicon.ico");
+        sendRequest("/favicon.ico",false,"favicon.ico");
+        sendRequest("/favicon.ico",true,"favicon.ico");
+        sendRequest("/favicon.ico",true,"favicon.ico");
     }
 }

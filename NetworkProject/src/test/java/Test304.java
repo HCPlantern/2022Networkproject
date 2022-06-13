@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-public class Test301 {
+public class Test304 {
     private Client client;
 
     @Before
@@ -19,18 +19,20 @@ public class Test301 {
         client = new Client();
     }
 
-    private void sendRequest(String path, String savePath) {
+    private void sendRequest(String path,String savePath) throws IOException {
         RequestLine requestLine = new RequestLine(Method.GET, path);
         MessageHeader messageHeader = new MessageHeader();
-        messageHeader.putField(HeaderFields.Host, "localhost:5000");
+        messageHeader.putField(HeaderFields.Host, "www.historychina.net");
         messageHeader.putField(HeaderFields.Connection, "keep-alive");
         MessageEntityBody body = new MessageEntityBody();
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, body);
         HttpResponse httpResponse = client.sendRequest(httpRequest);
         System.out.println(httpRequest);
+        System.out.println(httpResponse);
+        System.out.println();
         if (savePath != null) {
             try {
-                httpRequest.getRequestEntityBody().save(savePath);
+                httpResponse.saveBody(savePath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -38,14 +40,10 @@ public class Test301 {
             System.out.println(httpResponse);
         }
     }
+
     @Test
-    public void test1() {
-        sendRequest("/movedIndex.html", "movedIndex.html");
-        sendRequest("/movedIndex.html", "movedIndex.html");
-    }
-    @Test
-    public void test2() {
-        sendRequest("/movedPic.png", "movedPic.png");
-        sendRequest("/movedPic.png", "movedPic.png");
+    public void test1() throws IOException {
+        sendRequest("/images/zl_bg5.png","img1.png");
+        sendRequest("/images/zl_bg5.png","img1.png");
     }
 }
