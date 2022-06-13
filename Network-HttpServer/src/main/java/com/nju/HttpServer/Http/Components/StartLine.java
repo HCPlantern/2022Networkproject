@@ -2,6 +2,9 @@ package com.nju.HttpServer.Http.Components;
 
 import java.nio.charset.StandardCharsets;
 
+import lombok.Data;
+
+@Data
 public class StartLine implements Component {
     String method;
     String target;
@@ -10,30 +13,6 @@ public class StartLine implements Component {
     public StartLine(String method, String target, double version) {
         this.method = method.toUpperCase();
         this.target = target;
-        this.version = version;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public void setMethod(String method) {
-        this.method = method.toUpperCase();
-    }
-
-    public String getTarget() {
-        return target;
-    }
-
-    public void setTarget(String target) {
-        this.target = target;
-    }
-
-    public double getVersion() {
-        return version;
-    }
-
-    public void setVersion(double version) {
         this.version = version;
     }
 

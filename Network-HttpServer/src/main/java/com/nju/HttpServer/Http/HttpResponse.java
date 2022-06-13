@@ -1,44 +1,18 @@
 package com.nju.HttpServer.Http;
 
 import com.nju.HttpServer.Http.Components.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
  * http响应类，负责封装http响应
  **/
+@Data
+@AllArgsConstructor
 public class HttpResponse implements Component {
     StatusLine statusLine;
     Headers headers;
     Body body;
-
-    public HttpResponse(StatusLine statusLine, Headers headers, Body body) {
-        this.statusLine = statusLine;
-        this.headers = headers;
-        this.body = body;
-    }
-
-    public StatusLine getStatusLine() {
-        return statusLine;
-    }
-
-    public void setStatusLine(StatusLine statusLine) {
-        this.statusLine = statusLine;
-    }
-
-    public Headers getHeaders() {
-        return headers;
-    }
-
-    public void setHeaders(Headers headers) {
-        this.headers = headers;
-    }
-
-    public Body getBody() {
-        return body;
-    }
-
-    public void setBody(Body body) {
-        this.body = body;
-    }
 
     @Override
     public String ToString() {

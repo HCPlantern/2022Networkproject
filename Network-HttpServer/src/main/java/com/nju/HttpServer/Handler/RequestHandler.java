@@ -133,8 +133,6 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
 
     @Override
     public void failed(Throwable exc, ByteBuffer attachment) {
-//        logger.warn("读取请求失败");
-//        logger.error(exc);
         AcceptHandler.closeChannel(channel, "因RequestHandler读取失败");
     }
 }

@@ -5,9 +5,6 @@ import com.nju.HttpServer.Http.Components.*;
 public class Util {
     public static String lineBreak = System.getProperty("line.separator");
 
-    public Util() {
-    }
-
     public static HttpRequest String2Request(String s) {
         String[] tmp = s.split(lineBreak);
         StartLine startLine = StartLine.String2StartLine(tmp[0]);
