@@ -1,44 +1,18 @@
 package com.nju.HttpServer.Http;
 
 import com.nju.HttpServer.Http.Components.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 /**
  * http请求类，负责封装http请求
  **/
+@Data
+@AllArgsConstructor
 public class HttpRequest implements Component {
     StartLine startLine;
     Headers headers;
     Body body;
-
-    public HttpRequest(StartLine startLine, Headers headers, Body body) {
-        this.startLine = startLine;
-        this.headers = headers;
-        this.body = body;
-    }
-
-    public StartLine getStartLine() {
-        return startLine;
-    }
-
-    public void setStartLine(StartLine startLine) {
-        this.startLine = startLine;
-    }
-
-    public Headers getHeaders() {
-        return headers;
-    }
-
-    public void setHeaders(Headers headers) {
-        this.headers = headers;
-    }
-
-    public Body getBody() {
-        return body;
-    }
-
-    public void setBody(Body body) {
-        this.body = body;
-    }
 
     @Override
     public String ToString() {

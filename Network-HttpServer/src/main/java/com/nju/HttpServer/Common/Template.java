@@ -4,7 +4,6 @@ import com.nju.HttpServer.Http.Components.Body;
 import com.nju.HttpServer.Http.Components.Headers;
 import com.nju.HttpServer.Http.Components.StatusLine;
 import com.nju.HttpServer.Http.HttpResponse;
-import com.nju.HttpServer.Common.StatusCode;
 
 /**
  * 一些对应状态码的response模板
