@@ -15,6 +15,7 @@ import com.nju.HttpClient.LocalCache.LocalResource;
 import com.nju.HttpClient.LocalCache.RedirectResourceCache;
 import com.nju.HttpClient.Utils.InputStreamReaderHelper;
 import com.nju.HttpClient.Utils.TimeTransformer;
+import com.nju.HttpClient.Utils.UriHelper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -76,12 +77,7 @@ public class ResponseHandler implements Handler {
         assert (newPath != null);
         // get new URI
         URI oldUri = getRequestUri(httpRequest);
-        URI newUri;
-        try {
-            newUri = new URI(oldUri.getScheme(), oldUri.getHost(), newPath, oldUri.getFragment());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+        URI newUri = UriHelper.createUri(oldUri.getScheme(), oldUri.getHost(), oldUri.getPort(), newPath);
         redirectResourceCache.setNewUri(oldUri, newUri);
         // create new http request
         RequestLine oldRequestLine = httpRequest.getRequestLine();
@@ -94,14 +90,6 @@ public class ResponseHandler implements Handler {
     //TODO: 对于302的处理(暂时重定向，不需要更新redirectCache，需要重构请求报文，重新发送报文)
     public HttpResponse handle302(HttpRequest httpRequest, HttpResponse httpResponse) {
         String newPath = httpResponse.getResponseHeader().getFieldValue(HeaderFields.Location);
-        if (newPath.matches("(http)|(https)://.*")) {
-            String[] temp = newPath.split("://");
-            newPath = temp[1];
-            if (newPath.endsWith("/")) {
-                // remove '/' at the end
-                newPath = newPath.substring(0, newPath.length() - 1);
-            }
-        }
         assert (newPath != null);
         MessageHeader header = httpRequest.getRequestHeader();
         header.putField(HeaderFields.Host, newPath);
@@ -122,13 +110,7 @@ public class ResponseHandler implements Handler {
     private URI getRequestUri(HttpRequest httpRequest) {
         String path = httpRequest.getRequestLine().getRequestURL();
         String host = httpRequest.getRequestHeader().getFieldValue(HeaderFields.Host);
-        URI uri;
-        try {
-            uri = new URI("http", host, path, null);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        return uri;
+        return UriHelper.createUri("http", host, path);
     }
 
     public ResponseLine parseResponseLine(InputStream inputStream) {

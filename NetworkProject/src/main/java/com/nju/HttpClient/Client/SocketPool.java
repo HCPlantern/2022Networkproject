@@ -2,6 +2,7 @@ package com.nju.HttpClient.Client;
 
 import com.nju.HttpClient.Components.Common.HeaderFields;
 import com.nju.HttpClient.Components.Request.HttpRequest;
+import com.nju.HttpClient.Utils.UriHelper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashMap;
+
 // 使用连接池来管理socket
 // 如果是短连接,用完直接关闭
 // 如果是长连接,用完不会关闭,存放到socketpool中
@@ -37,9 +39,8 @@ public class SocketPool {
             }
         }
         String path = requestMessage.getRequestLine().getRequestURL();
-        URI uri = new URI("http", host, path, null);
-        int port = uri.getPort() == -1 ? 80 : uri.getPort();
-        clientSocket = new Socket(host, port);
+        URI uri = UriHelper.createUri("http", host, path);
+        clientSocket = new Socket(uri.getHost(), uri.getPort());
         String connection = requestMessage.getRequestHeader().getFieldValue(HeaderFields.Connection);
         boolean isKeepAlive = connection != null && connection.equals("keep-alive");
         clientSocket.setKeepAlive(isKeepAlive);
@@ -47,6 +48,7 @@ public class SocketPool {
         clientsocketHashMap.put(host, clientSocket);
         return clientSocket;
     }
+
     public void removeSocket(String host) throws IOException {
         Socket clientSocket = clientsocketHashMap.get(host);
         if (clientSocket != null) {
