@@ -9,6 +9,7 @@ import com.nju.HttpClient.LocalCache.LastModifiedResourceCache;
 import com.nju.HttpClient.LocalCache.LocalResource;
 import com.nju.HttpClient.LocalCache.RedirectResourceCache;
 import com.nju.HttpClient.Utils.TimeTransformer;
+import com.nju.HttpClient.Utils.UriHelper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -52,14 +53,14 @@ public class RequestHandler implements Handler {
     //TODO: 查看当前请求的资源有没有被永久重定向 如果有永久重定向 原来的请求报文会被重构
     //这个方法只会处理永久重定向的,对于暂时重定向的不会重构请求报文
     public HttpRequest findRedirectPermanently(HttpRequest requestMessage) throws URISyntaxException {
-//        提取旧的主机和路径
+        //提取旧的主机和路径
         String oldHost = requestMessage.getRequestHeader().getFieldValue(HeaderFields.Host);
         String oldPath = requestMessage.getRequestLine().getRequestURL();
-        URI oldURI = new URI("http", oldHost, oldPath, null);
-//        获得新的请求路径
+        URI oldURI = UriHelper.createUri("http", oldHost, oldPath);
+        //获得新的请求路径
         URI newURI = redirectResourceCache.getNewUri(oldURI);
         if (newURI != null) {
-            String newHost = newURI.getHost();
+            String newHost = UriHelper.getHttpHost(newURI);
             String newPath = newURI.getPath();
             requestMessage.getRequestLine().setRequestURL(newPath);
             requestMessage.getRequestHeader().putField(HeaderFields.Host, newHost);
@@ -71,7 +72,7 @@ public class RequestHandler implements Handler {
     public HttpRequest findLastModified(HttpRequest requestMessage) throws URISyntaxException {
         String resourceHost = requestMessage.getRequestHeader().getFieldValue(HeaderFields.Host);
         String resourcePath = requestMessage.getRequestLine().getRequestURL();
-        URI resourceURI = new URI("http", resourceHost, resourcePath, null);
+        URI resourceURI = UriHelper.createUri("http", resourceHost, resourcePath);
         LocalResource localResource = lastModifiedResourceCache.getModifiedLocalResource(resourceURI);
         if (localResource != null) {
             Long timeStap = localResource.getTimeStamp();
