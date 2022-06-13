@@ -40,12 +40,12 @@ public class Test301 {
     }
     @Test
     public void test1() {
-        sendRequest("/movedIndex.html", "movedIndex.html");
-        sendRequest("/movedIndex.html", "movedIndex.html");
+        sendRequest("/movedIndex.html", "resources/movedIndex.html");
+        sendRequest("/movedIndex.html", "resources/movedIndex.html");
     }
     @Test
     public void test2() {
-        sendRequest("/movedPic.png", "movedPic.png");
-        sendRequest("/movedPic.png", "movedPic.png");
+        sendRequest("/movedPic.png", "resources/movedPic.png");
+        sendRequest("/movedPic.png", "resources/movedPic.png");
     }
 }

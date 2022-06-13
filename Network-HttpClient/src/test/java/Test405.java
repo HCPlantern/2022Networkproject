@@ -44,7 +44,7 @@ public class Test405 {
     @Test
     public void test1() {
         try {
-            sendRequest("/style.css","style.css");
+            sendRequest("/style.css","resources/style.css");
         }catch (Exception e){
             System.out.println("error 405");
         }

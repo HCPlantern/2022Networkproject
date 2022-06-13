@@ -40,10 +40,10 @@ public class TestKeepAlive {
     }
     @Test
     public void testKeepAlive(){
-        sendRequest("/favicon.ico",false,"favicon.ico");
-        sendRequest("/favicon.ico",false,"favicon.ico");
-        sendRequest("/favicon.ico",false,"favicon.ico");
-        sendRequest("/favicon.ico",true,"favicon.ico");
-        sendRequest("/favicon.ico",true,"favicon.ico");
+        sendRequest("/favicon.ico",false,"resources/favicon.ico");
+        sendRequest("/favicon.ico",false,"resources/favicon.ico");
+        sendRequest("/favicon.ico",false,"resources/favicon.ico");
+        sendRequest("/favicon.ico",true,"resources/favicon.ico");
+        sendRequest("/favicon.ico",true,"resources/favicon.ico");
     }
 }

@@ -42,19 +42,19 @@ public class Test302 {
 
     @Test
     public void test1() throws IOException {
-        sendRequest("/movedIndex2.html","movedIndex2.html");
-        sendRequest("/movedIndex2.html","movedIndex2.html");
+        sendRequest("/movedIndex2.html","resources/movedIndex2.html");
+        sendRequest("/movedIndex2.html","resources/movedIndex2.html");
     }
 
     @Test
     public void test2() throws IOException {
-        sendRequest("/movedPic2.png","movedPic2.png");
-        sendRequest("/movedPic2.png","movedPic2.png");
+        sendRequest("/movedPic2.png","resources/movedPic2.png");
+        sendRequest("/movedPic2.png","resources/movedPic2.png");
     }
 
     @Test
     public void test3() throws IOException {
-        sendRequest("/movedPic2.jpg","movedPic2.jpg");
-        sendRequest("/movedPic2.jpg","movedPic2.jpg");
+        sendRequest("/movedPic2.jpg","resources/movedPic2.jpg");
+        sendRequest("/movedPic2.jpg","resources/movedPic2.jpg");
     }
 }

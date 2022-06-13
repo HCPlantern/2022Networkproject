@@ -43,14 +43,14 @@ public class Test304 {
 
     @Test
     public void test1() throws IOException {
-        sendRequest("www.historychina.net","/images/zl_bg5.png","img1.png");
-        sendRequest("www.historychina.net","/images/zl_bg5.png","img1.png");
+        sendRequest("www.historychina.net","/images/zl_bg5.png","resources/img1.png");
+        sendRequest("www.historychina.net","/images/zl_bg5.png","resources/img1.png");
     }
 
     @Test
     public void test2() throws IOException {
-        sendRequest("localhost:5000","/style.css","style.css");
-        sendRequest("localhost:5000","/style.css","style.css");
+        sendRequest("localhost:5000","/style.css","resources/style.css");
+        sendRequest("localhost:5000","/style.css","resources/style.css");
     }
 
 

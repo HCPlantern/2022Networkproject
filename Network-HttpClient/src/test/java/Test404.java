@@ -44,7 +44,7 @@ public class Test404 {
     @Test
     public void test1() {
         try {
-            sendRequest("/hello.html","hello.html");
+            sendRequest("/hello.html","resources/hello.html");
         }catch (Exception e){
             System.out.println("error 404");
         }

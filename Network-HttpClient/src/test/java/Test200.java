@@ -37,7 +37,7 @@ public class Test200 {
         MessageEntityBody messageBody = new MessageEntityBody();
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, messageBody);
         HttpResponse httpResponse = client.sendRequest(httpRequest);
-        httpResponse.saveBody("baidu.html");
+        httpResponse.saveBody("resources/baidu.html");
         System.out.println(httpResponse.toString());
     }
 }
