@@ -1,4 +1,3 @@
-package test.com.nju.HttpClient;
 
 import com.nju.HttpClient.Client.Client;
 import com.nju.HttpClient.Components.Common.HeaderFields;
@@ -33,4 +32,5 @@ public class Test200 {
     }
 
 
-} 
+}
+
