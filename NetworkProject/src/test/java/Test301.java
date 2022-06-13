@@ -9,6 +9,8 @@ import com.nju.HttpClient.Components.Response.HttpResponse;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+
 public class Test301 {
     private Client client;
 
@@ -17,7 +19,7 @@ public class Test301 {
         client = new Client();
     }
 
-    private void sendRequest(String path) {
+    private void sendRequest(String path, String savePath) {
         RequestLine requestLine = new RequestLine(Method.GET, path);
         MessageHeader messageHeader = new MessageHeader();
         messageHeader.putField(HeaderFields.Host, "localhost:5000");
@@ -26,19 +28,27 @@ public class Test301 {
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, body);
         HttpResponse httpResponse = client.sendRequest(httpRequest);
         System.out.println(httpRequest);
-        System.out.println(httpResponse);
+        if (savePath != null) {
+            try {
+                httpRequest.getRequestEntityBody().save(savePath);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            System.out.println(httpResponse);
+        }
     }
 
 
     @Test
     public void test1() {
-        sendRequest("/movedIndex.html");
-        sendRequest("/movedIndex.html");
+        sendRequest("/movedIndex.html", null);
+        sendRequest("/movedIndex.html", null);
     }
 
     @Test
     public void test2() {
-        sendRequest("/movedPic.png");
-        sendRequest("/movedPic.png");
+        sendRequest("/movedPic.png", null);
+        sendRequest("/movedPic.png", null);
     }
 }
