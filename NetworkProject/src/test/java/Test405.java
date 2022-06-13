@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-public class Test304 {
+public class Test405 {
     private Client client;
 
     @Before
@@ -19,10 +19,10 @@ public class Test304 {
         client = new Client();
     }
 
-    private void sendRequest(String host,String path,String savePath) throws IOException {
-        RequestLine requestLine = new RequestLine(Method.GET, path);
+    private void sendRequest(String path,String savePath) throws IOException {
+        RequestLine requestLine = new RequestLine(Method.POST, path);
         MessageHeader messageHeader = new MessageHeader();
-        messageHeader.putField(HeaderFields.Host, host);
+        messageHeader.putField(HeaderFields.Host, "localhost:5000");
         messageHeader.putField(HeaderFields.Connection, "keep-alive");
         MessageEntityBody body = new MessageEntityBody();
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, body);
@@ -42,16 +42,11 @@ public class Test304 {
     }
 
     @Test
-    public void test1() throws IOException {
-        sendRequest("www.historychina.net","/images/zl_bg5.png","img1.png");
-        sendRequest("www.historychina.net","/images/zl_bg5.png","img1.png");
+    public void test1() {
+        try {
+            sendRequest("/style.css","style.css");
+        }catch (Exception e){
+            System.out.println("error 405");
+        }
     }
-
-    @Test
-    public void test2() throws IOException {
-        sendRequest("localhost:5000","/style.css","style.css");
-        sendRequest("localhost:5000","/style.css","style.css");
-    }
-
-
 }
