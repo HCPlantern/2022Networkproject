@@ -1,5 +1,3 @@
-package test.com.nju.HttpClient;
-
 import com.nju.HttpClient.Client.Client;
 import com.nju.HttpClient.Components.Common.HeaderFields;
 import com.nju.HttpClient.Components.Common.MessageEntityBody;
@@ -11,7 +9,7 @@ import com.nju.HttpClient.Components.Response.HttpResponse;
 import org.junit.Before;
 import org.junit.Test;
 
-public class Test301 {
+public class Test302 {
     private Client client;
 
     @Before
@@ -31,16 +29,9 @@ public class Test301 {
         System.out.println(httpResponse);
     }
 
-
     @Test
     public void test1() {
-        sendRequest("/movedIndex.html");
-        sendRequest("/movedIndex.html");
+        sendRequest("/moveIndex2.html");
     }
 
-    @Test
-    public void test2() {
-        sendRequest("/movedPic.png");
-        sendRequest("/movedPic.png");
-    }
 }
