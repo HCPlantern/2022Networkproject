@@ -16,6 +16,8 @@ public class Test200 {
 
     Client client;
 
+    private final String path = "src/main/resources/ResponseResources/";
+
     @Before
     public void before() {
         client = new Client();
@@ -37,8 +39,7 @@ public class Test200 {
         MessageEntityBody messageBody = new MessageEntityBody();
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, messageBody);
         HttpResponse httpResponse = client.sendRequest(httpRequest);
-        httpResponse.saveBody("resources/baidu.html");
-        System.out.println(httpResponse.toString());
+        httpResponse.saveBody(path + "baidu.html");
     }
 }
 

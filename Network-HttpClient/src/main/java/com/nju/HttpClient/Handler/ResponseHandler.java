@@ -17,6 +17,8 @@ import com.nju.HttpClient.Utils.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -30,18 +32,18 @@ import java.util.zip.GZIPInputStream;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResponseHandler implements Handler {
+    private static Logger logger = LogManager.getLogger(ResponseHandler.class);
     LastModifiedResourceCache lastModifiedResourceCache;
     RedirectResourceCache redirectResourceCache;
     Client client;
 
-    //TODO: 客户端处理响应报文的具体逻辑
+    //客户端处理响应报文的具体逻辑
     public HttpResponse handle(HttpRequest httpRequest, InputStream inputStream) {
         ResponseLine responseLine = parseResponseLine(inputStream);
         MessageHeader messageHeader = parseMessageHeader(inputStream);
         MessageEntityBody messageEntityBody = parseMessageEntityBody(inputStream, messageHeader);
         HttpResponse httpResponse = new HttpResponse(responseLine, messageHeader, messageEntityBody);
-        System.out.println(httpResponse);
-        System.out.println();
+
         int statusCode = responseLine.getStatusCode();
         if (statusCode == StatusCode.OK) {
             handle200(httpRequest, httpResponse);
@@ -53,12 +55,15 @@ public class ResponseHandler implements Handler {
         } else if (statusCode == StatusCode.Not_Modified) {
             return handle304(httpRequest, httpResponse);
         } else {
+            logger.warn("Unsupported Statues Code: " + statusCode);
             throw new IllegalArgumentException("Unsupported Statues Code.");
         }
     }
 
-    //TODO: 对于响应码是200的处理(只需要将资源存到cache里就可以)
+    //对于响应码是200的处理(只需要将资源存到cache里就可以)
     public void handle200(HttpRequest httpRequest, HttpResponse httpResponse) {
+        logger.debug("Get return status code: 200");
+        logger.debug("Response header: \n" + httpResponse.getResponseLine().toString() + httpResponse.getResponseHeader().toString());
         MessageHeader responseHeader = httpResponse.getResponseHeader();
         Long timeStamp;
         try {
@@ -71,37 +76,50 @@ public class ResponseHandler implements Handler {
         LocalResource resource = new LocalResource(timeStamp, httpResponse.getResponseEntityBody(), responseHeader.getFieldValue(HeaderFields.Content_Type));
         URI uri = getRequestUri(httpRequest);
         lastModifiedResourceCache.addModifiedLocalResource(uri, resource);
+        logger.debug("Save local resource");
+        logger.debug("URI: " + uri.toString());
     }
 
-    //TODO: 对于301的处理(永久重定向，需要更新redirectCache并且重构请求报文，重新发送报文)
+    //对于301的处理(永久重定向，需要更新redirectCache并且重构请求报文，重新发送报文)
     public HttpResponse handle301(HttpRequest httpRequest, HttpResponse httpResponse) {
+        logger.debug("Get status code 301");
+        logger.debug("ResponseLine: " + httpResponse.getResponseLine());
         String newPath = httpResponse.getResponseHeader().getFieldValue(HeaderFields.Location);
         assert (newPath != null);
         // get new URI
         URI oldUri = getRequestUri(httpRequest);
         URI newUri = UriHelper.createUri(oldUri.getScheme(), oldUri.getHost(), oldUri.getPort(), newPath);
         redirectResourceCache.setNewUri(oldUri, newUri);
+        logger.debug("Add redirect resource cache, URI: " + newUri.toString());
+
         // create new http request
         RequestLine oldRequestLine = httpRequest.getRequestLine();
         RequestLine newRequestLine = new RequestLine(oldRequestLine.getMethod(), newPath, oldRequestLine.getVersion());
         HttpRequest newHttpRequest = new HttpRequest(newRequestLine, httpRequest.getRequestHeader(), httpRequest.getRequestEntityBody());
         // resent the new request
+        logger.debug("Send new http request");
         return client.sendRequest(newHttpRequest);
     }
 
-    //TODO: 对于302的处理(暂时重定向，不需要更新redirectCache，需要重构请求报文，重新发送报文)
+    //对于302的处理(暂时重定向，不需要更新redirectCache，需要重构请求报文，重新发送报文)
     public HttpResponse handle302(HttpRequest httpRequest, HttpResponse httpResponse) {
+        logger.debug("Get status code 302");
+        logger.debug("ResponseLine: " + httpResponse.getResponseLine());
         String newPath = httpResponse.getResponseHeader().getFieldValue(HeaderFields.Location);
         assert (newPath != null);
+        logger.debug("Get temporary redirect path: " + newPath.toString());
         RequestLine requestLine = httpRequest.getRequestLine();
         requestLine.setRequestURL(newPath);
         // resent the new request.
+        logger.debug("Send new http request");
         return client.sendRequest(httpRequest);
     }
 
-    // TODO: 对于304的处理(从lastModifiedResourceCache中获取数据部分就可以)
+    // 对于304的处理(从lastModifiedResourceCache中获取数据部分就可以)
     // In this case, httpResponse should be null. Check cache and set response body, then return.
     public HttpResponse handle304(HttpRequest httpRequest, HttpResponse httpResponse) {
+        logger.debug("Get status code 304");
+        logger.debug("ResponseLine: " + httpResponse.getResponseLine());
         URI uri = getRequestUri(httpRequest);
         MessageEntityBody body = lastModifiedResourceCache.getModifiedLocalResource(uri).getMessageEntityBody();
         httpResponse.setResponseEntityBody(body);
@@ -159,36 +177,25 @@ public class ResponseHandler implements Handler {
 
     @Override
     public MessageEntityBody parseMessageEntityBody(InputStream inputStream, MessageHeader header) {
-        byte[] b=new byte[0];
+        byte[] b = new byte[0];
         MessageEntityBody body;
         String contentLenStr = header.getFieldValue(HeaderFields.Content_Length);
-        String transferEncoding=header.getFieldValue(HeaderFields.Transfer_Encoding);
+        String transferEncoding = header.getFieldValue(HeaderFields.Transfer_Encoding);
         try {
-            if(transferEncoding!=null&&transferEncoding.equals("chunked")){
+            if (transferEncoding != null && transferEncoding.equals("chunked")) {
                 b = ChunkReader.readChunk(inputStream);
                 // Content-Encoding: gzip 解压缩
                 String contentEncoding = header.getFieldValue(HeaderFields.Content_Encoding);
-                if(contentEncoding!=null&&contentEncoding.equals("gzip")){
+                if (contentEncoding != null && contentEncoding.equals("gzip")) {
                     GZIPInputStream gzipInputStream = new GZIPInputStream(new ByteArrayInputStream(b));
                     b = InputStreamReaderHelper.readInputStream(gzipInputStream);
                 }
-            }else if(contentLenStr!=null){
+            } else if (contentLenStr != null) {
                 int length = Integer.parseInt(contentLenStr);
-                b = ByteReader.readByte(inputStream,length);
+                b = ByteReader.readByte(inputStream, length);
             }
-            body=new MessageEntityBody(b);
-//            if (contentLenStr != null) {
-////                body=new MessageEntityBody(b);
-//                body = new MessageEntityBody(inputStream.readNBytes(Integer.parseInt(contentLenStr)));
-//            } else {
-//                // TODO : gzip 格式
-//
-//
-//
-//
-//
-//                return null;
-//            }
+            body = new MessageEntityBody(b);
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

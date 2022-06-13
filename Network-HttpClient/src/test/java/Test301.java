@@ -14,6 +14,8 @@ import java.io.IOException;
 public class Test301 {
     private Client client;
 
+    private final String path = "src/main/resources/ResponseResources/";
+
     @Before
     public void setUp() {
         client = new Client();
@@ -27,25 +29,24 @@ public class Test301 {
         MessageEntityBody body = new MessageEntityBody();
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, body);
         HttpResponse httpResponse = client.sendRequest(httpRequest);
-        System.out.println(httpRequest);
         if (savePath != null) {
             try {
                 httpRequest.getRequestEntityBody().save(savePath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        } else {
-            System.out.println(httpResponse);
         }
     }
+
     @Test
     public void test1() {
-        sendRequest("/movedIndex.html", "resources/movedIndex.html");
-        sendRequest("/movedIndex.html", "resources/movedIndex.html");
+        sendRequest("/movedIndex.html", path + "movedIndex.html");
+        sendRequest("/movedIndex.html", path + "movedIndex.html");
     }
+
     @Test
     public void test2() {
-        sendRequest("/movedPic.png", "resources/movedPic.png");
-        sendRequest("/movedPic.png", "resources/movedPic.png");
+        sendRequest("/movedPic.png", path + "movedPic.png");
+        sendRequest("/movedPic.png", path + "movedPic.png");
     }
 }

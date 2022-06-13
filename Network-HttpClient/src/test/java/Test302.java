@@ -13,6 +13,7 @@ import java.io.IOException;
 
 public class Test302 {
     private Client client;
+    private final String path = "src/main/resources/ResponseResources/";
 
     @Before
     public void setUp() {
@@ -27,34 +28,30 @@ public class Test302 {
         MessageEntityBody body = new MessageEntityBody();
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, body);
         HttpResponse httpResponse = client.sendRequest(httpRequest);
-        System.out.println(httpRequest);
-        System.out.println(httpResponse);
         if (savePath != null) {
             try {
                 httpResponse.saveBody(savePath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        } else {
-            System.out.println(httpResponse);
         }
     }
 
     @Test
     public void test1() throws IOException {
-        sendRequest("/movedIndex2.html","resources/movedIndex2.html");
-        sendRequest("/movedIndex2.html","resources/movedIndex2.html");
+        sendRequest("/movedIndex2.html",path + "movedIndex2.html");
+        sendRequest("/movedIndex2.html",path + "movedIndex2.html");
     }
 
     @Test
     public void test2() throws IOException {
-        sendRequest("/movedPic2.png","resources/movedPic2.png");
-        sendRequest("/movedPic2.png","resources/movedPic2.png");
+        sendRequest("/movedPic2.png",path + "movedPic2.png");
+        sendRequest("/movedPic2.png",path + "movedPic2.png");
     }
 
     @Test
     public void test3() throws IOException {
-        sendRequest("/movedPic2.jpg","resources/movedPic2.jpg");
-        sendRequest("/movedPic2.jpg","resources/movedPic2.jpg");
+        sendRequest("/movedPic2.jpg",path + "movedPic2.jpg");
+        sendRequest("/movedPic2.jpg",path + "movedPic2.jpg");
     }
 }

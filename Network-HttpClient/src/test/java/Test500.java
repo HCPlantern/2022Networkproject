@@ -15,6 +15,7 @@ public class Test500 {
 
     private Client client;
 
+    private final String path = "src/main/resources/ResponseResources/";
     @Before
     public void setUp() {
         client = new Client();
@@ -28,17 +29,12 @@ public class Test500 {
         MessageEntityBody body = new MessageEntityBody();
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, body);
         HttpResponse httpResponse = client.sendRequest(httpRequest);
-        System.out.println(httpRequest);
-        System.out.println(httpResponse);
-        System.out.println();
         if (savePath != null) {
             try {
                 httpResponse.saveBody(savePath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        } else {
-            System.out.println(httpResponse);
         }
     }
 

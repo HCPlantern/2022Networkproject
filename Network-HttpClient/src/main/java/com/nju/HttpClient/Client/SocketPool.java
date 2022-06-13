@@ -2,10 +2,13 @@ package com.nju.HttpClient.Client;
 
 import com.nju.HttpClient.Components.Common.HeaderFields;
 import com.nju.HttpClient.Components.Request.HttpRequest;
+import com.nju.HttpClient.Handler.RequestHandler;
 import com.nju.HttpClient.Utils.UriHelper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -21,6 +24,9 @@ import java.util.HashMap;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SocketPool {
+
+    private static Logger logger = LogManager.getLogger(SocketPool.class);
+
     private HashMap<String, Socket> clientsocketHashMap;
 
     public Socket createClientSocket(HttpRequest requestMessage) throws URISyntaxException, IOException {
@@ -35,7 +41,7 @@ public class SocketPool {
             if (clientSocket.isClosed()) {
                 clientsocketHashMap.remove(host);
             } else {
-                System.out.println("reuseConnection");
+                logger.debug("Reuse connection");
                 return clientSocket;
             }
         }
@@ -47,7 +53,7 @@ public class SocketPool {
         clientSocket.setKeepAlive(isKeepAlive);
 
         clientsocketHashMap.put(host, clientSocket);
-        System.out.println("createConnection");
+        logger.debug("Create connection");
         return clientSocket;
     }
 

@@ -13,6 +13,8 @@ import com.nju.HttpClient.Utils.UriHelper;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 import java.net.URI;
@@ -22,11 +24,12 @@ import java.net.URISyntaxException;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestHandler implements Handler {
+    private static Logger logger = LogManager.getLogger(RequestHandler.class);
     LastModifiedResourceCache lastModifiedResourceCache;
     RedirectResourceCache redirectResourceCache;
 
     //    在每一次发送请求报文之前都需要规范化一下
-    //TODO: 重构一下请求报文
+    //重构一下请求报文
     public HttpRequest handle(HttpRequest requestMessage) throws URISyntaxException {
         HttpRequest reformatRequest = null;
         if (requestMessage == null) {
@@ -41,16 +44,18 @@ public class RequestHandler implements Handler {
             boolean isChunked = "chunked".equals(requestMessage.getRequestHeader().getFieldValue(HeaderFields.Transfer_Encoding));
             if (!isChunked) {
                 requestMessage.getRequestHeader().putField("content-length", requestMessage.getRequestEntityBody().toBytes().length + "");
+                logger.debug("Add content-length");
             }
         }
 //      这边的顺序有没有影响? 是先找重定向的还是先找last-modified?
 //        应该是先找重定向的，如果先找last-modified 可能这个资源已经被重定向了，这个时候的last-modified没有意义
         requestMessage = findRedirectPermanently(requestMessage);
         requestMessage = findLastModified(requestMessage);
+        logger.debug("Request message: \n" + requestMessage.getRequestLine().toString() + requestMessage.getRequestHeader().toString());
         return requestMessage;
     }
 
-    //TODO: 查看当前请求的资源有没有被永久重定向 如果有永久重定向 原来的请求报文会被重构
+    //查看当前请求的资源有没有被永久重定向 如果有永久重定向 原来的请求报文会被重构
     //这个方法只会处理永久重定向的,对于暂时重定向的不会重构请求报文
     public HttpRequest findRedirectPermanently(HttpRequest requestMessage) throws URISyntaxException {
         //提取旧的主机和路径
@@ -64,11 +69,14 @@ public class RequestHandler implements Handler {
             String newPath = newURI.getPath();
             requestMessage.getRequestLine().setRequestURL(newPath);
             requestMessage.getRequestHeader().putField(HeaderFields.Host, newHost);
+            logger.debug("Find redirect URI cache");
+            logger.debug("Old URI: " + oldURI.toString());
+            logger.debug("New URI: " + newURI.toString());
         }
         return requestMessage;
     }
 
-    //TODO: 尝试给当前的报文中加上Last-Modified(如果lastModifiedResourceCache缓存中有的话就添,如果没有就不添),用于触发304
+    //尝试给当前的报文中加上Last-Modified(如果lastModifiedResourceCache缓存中有的话就添,如果没有就不添),用于触发304
     public HttpRequest findLastModified(HttpRequest requestMessage) throws URISyntaxException {
         String resourceHost = requestMessage.getRequestHeader().getFieldValue(HeaderFields.Host);
         String resourcePath = requestMessage.getRequestLine().getRequestURL();
@@ -77,6 +85,8 @@ public class RequestHandler implements Handler {
         if (localResource != null) {
             Long timeStap = localResource.getTimeStamp();
             requestMessage.getRequestHeader().putField(HeaderFields.If_Modified_Since, TimeTransformer.toTimeString(timeStap));
+            logger.debug("Find local resource");
+            logger.debug("Add " + HeaderFields.If_Modified_Since);
         }
         return requestMessage;
     }
