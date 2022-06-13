@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 
-//TODO: 客户端程序入口
+//客户端程序入口
 public class Main {
     public static void main(String[] args) {
         Client client = new Client();

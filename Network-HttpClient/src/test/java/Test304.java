@@ -14,12 +14,14 @@ import java.io.IOException;
 public class Test304 {
     private Client client;
 
+    private final String path = "src/main/resources/ResponseResources/";
+
     @Before
     public void setUp() {
         client = new Client();
     }
 
-    private void sendRequest(String host,String path,String savePath) throws IOException {
+    private void sendRequest(String host, String path, String savePath) throws IOException {
         RequestLine requestLine = new RequestLine(Method.GET, path);
         MessageHeader messageHeader = new MessageHeader();
         messageHeader.putField(HeaderFields.Host, host);
@@ -27,9 +29,7 @@ public class Test304 {
         MessageEntityBody body = new MessageEntityBody();
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, body);
         HttpResponse httpResponse = client.sendRequest(httpRequest);
-        System.out.println(httpRequest);
-        System.out.println(httpResponse);
-        System.out.println();
+
         if (savePath != null) {
             try {
                 httpResponse.saveBody(savePath);
@@ -41,16 +41,11 @@ public class Test304 {
         }
     }
 
-    @Test
-    public void test1() throws IOException {
-        sendRequest("www.historychina.net","/images/zl_bg5.png","resources/img1.png");
-        sendRequest("www.historychina.net","/images/zl_bg5.png","resources/img1.png");
-    }
 
     @Test
-    public void test2() throws IOException {
-        sendRequest("localhost:5000","/style.css","resources/style.css");
-        sendRequest("localhost:5000","/style.css","resources/style.css");
+    public void test1() throws IOException {
+        sendRequest("localhost:5000", "/style.css", path + "style.css");
+        sendRequest("localhost:5000", "/style.css", path + "style.css");
     }
 
 

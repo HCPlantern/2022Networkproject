@@ -14,12 +14,14 @@ import java.io.IOException;
 public class Test405 {
     private Client client;
 
+    private final String path = "src/main/resources/ResponseResources/";
+
     @Before
     public void setUp() {
         client = new Client();
     }
 
-    private void sendRequest(String path,String savePath) throws IOException {
+    private void sendRequest(String path, String savePath) throws IOException {
         RequestLine requestLine = new RequestLine(Method.POST, path);
         MessageHeader messageHeader = new MessageHeader();
         messageHeader.putField(HeaderFields.Host, "localhost:5000");
@@ -27,9 +29,7 @@ public class Test405 {
         MessageEntityBody body = new MessageEntityBody();
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, body);
         HttpResponse httpResponse = client.sendRequest(httpRequest);
-        System.out.println(httpRequest);
-        System.out.println(httpResponse);
-        System.out.println();
+
         if (savePath != null) {
             try {
                 httpResponse.saveBody(savePath);
@@ -44,9 +44,9 @@ public class Test405 {
     @Test
     public void test1() {
         try {
-            sendRequest("/style.css","resources/style.css");
-        }catch (Exception e){
-            System.out.println("error 405");
+            sendRequest("/style.css", path + "style.css");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

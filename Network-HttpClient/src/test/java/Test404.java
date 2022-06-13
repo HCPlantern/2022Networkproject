@@ -14,12 +14,14 @@ import java.io.IOException;
 public class Test404 {
     private Client client;
 
+    private final String path = "src/main/resources/ResponseResources/";
+
     @Before
     public void setUp() {
         client = new Client();
     }
 
-    private void sendRequest(String path,String savePath) throws IOException {
+    private void sendRequest(String path, String savePath) throws IOException {
         RequestLine requestLine = new RequestLine(Method.GET, path);
         MessageHeader messageHeader = new MessageHeader();
         messageHeader.putField(HeaderFields.Host, "localhost:5000");
@@ -27,9 +29,6 @@ public class Test404 {
         MessageEntityBody body = new MessageEntityBody();
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, body);
         HttpResponse httpResponse = client.sendRequest(httpRequest);
-        System.out.println(httpRequest);
-        System.out.println(httpResponse);
-        System.out.println();
         if (savePath != null) {
             try {
                 httpResponse.saveBody(savePath);
@@ -44,8 +43,8 @@ public class Test404 {
     @Test
     public void test1() {
         try {
-            sendRequest("/hello.html","resources/hello.html");
-        }catch (Exception e){
+            sendRequest("/hello.html", path + "hello.html");
+        } catch (Exception e) {
             System.out.println("error 404");
         }
     }

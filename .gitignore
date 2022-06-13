@@ -1,7 +1,6 @@
 target
 log
 .idea
-src/main/resources
 
 # Compiled class file
 *.class

@@ -11,39 +11,41 @@ import org.junit.Test;
 import java.io.IOException;
 
 public class TestKeepAlive {
-    private Client client=new Client();
-    private void sendRequest(String path,boolean enableAlive,String savePath){
-        RequestLine requestLine=new RequestLine(Method.GET,path);
-        MessageHeader messageHeader=new MessageHeader();
-        messageHeader.putField(HeaderFields.Host,"localhost:5000");
-        if(enableAlive){
-            messageHeader.putField(HeaderFields.Connection,"keep-alive");
+    private Client client = new Client();
+
+    private final String path = "src/main/resources/ResponseResources/";
+
+    private void sendRequest(String path, boolean enableAlive, String savePath) {
+        RequestLine requestLine = new RequestLine(Method.GET, path);
+        MessageHeader messageHeader = new MessageHeader();
+        messageHeader.putField(HeaderFields.Host, "localhost:5000");
+        if (enableAlive) {
+            messageHeader.putField(HeaderFields.Connection, "keep-alive");
         }
-        messageHeader.putField(HeaderFields.Content_Length,"0");
-        MessageEntityBody messageEntityBody=new MessageEntityBody();
-        HttpRequest httpRequest=new HttpRequest(requestLine,messageHeader,messageEntityBody);
+        messageHeader.putField(HeaderFields.Content_Length, "0");
+        MessageEntityBody messageEntityBody = new MessageEntityBody();
+        HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, messageEntityBody);
         try {
-            HttpResponse response=client.sendRequest(httpRequest);
+            HttpResponse response = client.sendRequest(httpRequest);
             if (savePath != null) {
                 try {
                     response.saveBody(savePath);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-            } else {
-                System.out.println(response);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     @Test
-    public void testKeepAlive(){
-        sendRequest("/favicon.ico",false,"resources/favicon.ico");
-        sendRequest("/favicon.ico",false,"resources/favicon.ico");
-        sendRequest("/favicon.ico",false,"resources/favicon.ico");
-        sendRequest("/favicon.ico",true,"resources/favicon.ico");
-        sendRequest("/favicon.ico",true,"resources/favicon.ico");
+    public void testKeepAlive() {
+        sendRequest("/favicon.ico", false, path + "favicon.ico");
+        sendRequest("/favicon.ico", false, path + "favicon.ico");
+        sendRequest("/favicon.ico", false, path + "favicon.ico");
+        sendRequest("/favicon.ico", true, path + "favicon.ico");
+        sendRequest("/favicon.ico", true, path + "favicon.ico");
     }
 }
