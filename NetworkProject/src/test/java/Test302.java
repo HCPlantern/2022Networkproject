@@ -31,7 +31,19 @@ public class Test302 {
 
     @Test
     public void test1() {
-        sendRequest("/moveIndex2.html");
+        sendRequest("/movedIndex2.html");
+        sendRequest("/movedIndex2.html");
     }
 
+    @Test
+    public void test2() {
+        sendRequest("/movedPic2.png");
+        sendRequest("/movedPic2.png");
+    }
+
+    @Test
+    public void test3() {
+        sendRequest("/movedPic2.jpg");
+        sendRequest("/movedPic2.jpg");
+    }
 }
