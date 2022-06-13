@@ -83,7 +83,8 @@ public class ResponseHandler implements Handler {
     //对于301的处理(永久重定向，需要更新redirectCache并且重构请求报文，重新发送报文)
     public HttpResponse handle301(HttpRequest httpRequest, HttpResponse httpResponse) {
         logger.debug("Get status code 301");
-        logger.debug("ResponseLine: " + httpResponse.getResponseLine());
+        logger.debug("Response Line: \n" + httpResponse.getResponseLine());
+        logger.debug("REsponse Header: \n" + httpResponse.getResponseHeader());
         String newPath = httpResponse.getResponseHeader().getFieldValue(HeaderFields.Location);
         assert (newPath != null);
         // get new URI

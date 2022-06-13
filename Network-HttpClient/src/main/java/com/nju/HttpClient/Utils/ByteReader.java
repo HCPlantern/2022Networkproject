@@ -4,10 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * @author fguohao
- * @date 2021/05/28
- */
 public class ByteReader {
     public static byte[] read(BufferedReader bufferedReader, int length) throws IOException {
         byte[] b = new byte[length];

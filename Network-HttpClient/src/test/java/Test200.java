@@ -34,8 +34,8 @@ public class Test200 {
         MessageHeader messageHeader = new MessageHeader();
         messageHeader.putField(HeaderFields.Host, "www.baidu.com");
         messageHeader.putField(HeaderFields.Accept, "*/*");
+        messageHeader.putField(HeaderFields.Accept_Encoding, "gzip, deflate, br");
         messageHeader.putField(HeaderFields.Connection, "keep-alive");
-//        messageHeader.putField(HeaderFields.Accept_Encoding, "gzip, deflate, br");
         MessageEntityBody messageBody = new MessageEntityBody();
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, messageBody);
         HttpResponse httpResponse = client.sendRequest(httpRequest);
