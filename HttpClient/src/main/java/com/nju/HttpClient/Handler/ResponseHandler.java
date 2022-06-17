@@ -84,7 +84,7 @@ public class ResponseHandler implements Handler {
     public HttpResponse handle301(HttpRequest httpRequest, HttpResponse httpResponse) {
         logger.debug("Get status code 301");
         logger.debug("Response Line: \n" + httpResponse.getResponseLine());
-        logger.debug("REsponse Header: \n" + httpResponse.getResponseHeader());
+        logger.debug("Response Header: \n" + httpResponse.getResponseHeader());
         String newPath = httpResponse.getResponseHeader().getFieldValue(HeaderFields.Location);
         assert (newPath != null);
         // get new URI
