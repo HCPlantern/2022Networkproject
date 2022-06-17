@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -78,11 +79,15 @@ public class StaticResourceService implements Service {
         //Todo:用HashMap等方式替代MIME类型分支
         Util.targetToMIME(target, headers);
 
-        //重定向静态资源路径到public文件夹
-        String path = "src/main/resources/StaticResources" + target;
-
+        //重定向静态资源路径到public文件夹 使用CLASSPATH定位文件
+        URL resource = this.getClass().getResource("/StaticResources" + target);
+        // 文件不存在 返回404
+        if (resource == null) {
+            logger.error(target + " is not found, 404");
+            return Template.generateStatusCode_404();
+        }
         // add length
-        File f = new File(path);
+        File f = new File(resource.getFile());
         headers.addHeader("Content-Length", Long.toString(f.length()));
 
         // add last modified
