@@ -34,7 +34,7 @@ public class ServerHandler implements Runnable {
          */
         channel.accept(this, new AcceptHandler());
         try {
-            EXIT_LATCH.await(); //保证主线程一直运行。八股。
+            EXIT_LATCH.await(); //保证主线程一直运行。
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
