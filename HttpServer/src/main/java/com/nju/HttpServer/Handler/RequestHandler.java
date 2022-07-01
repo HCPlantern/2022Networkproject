@@ -50,7 +50,7 @@ public class RequestHandler implements CompletionHandler<Integer, ByteBuffer> {
             //以UTF-8解码channel读出的字节数组byteMsg。
             String strMsg = new String(byteMsg, "UTF-8");
             logger.info("服务器收到请求，完整打印:" + System.lineSeparator() + strMsg);
-            //根据请求匹配Executor进行处理并生成Response，逻辑与tfgg基本一致
+            //根据请求匹配Executor进行处理并生成Response
             try {
                 HttpRequest request = Util.String2Request(strMsg);
                 HttpResponse response = SimpleServer.router.MapRoute(request);

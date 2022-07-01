@@ -23,7 +23,7 @@ public class AcceptHandler implements CompletionHandler<AsynchronousSocketChanne
      **/
     @Override
     public void completed(AsynchronousSocketChannel channel, ServerHandler serverHandler) {
-        /*继续接收其它客户端的请求。八股。
+        /*继续接收其它客户端的请求。
          *第一个参数依然需要传serverHandler
          * */
         serverHandler.channel.accept(serverHandler, this);
