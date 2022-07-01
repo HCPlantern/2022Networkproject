@@ -30,11 +30,11 @@ import static com.nju.HttpServer.Services.Util.MovedTemporarilyResource;
 public class StaticResourceService implements Service {
     private static Logger logger = LogManager.getLogger(StaticResourceService.class);
 
-    /*
+    /**
      * 所请求的资源未修改，服务器返回此状态码时，不会返回任何资源。客户端通常会缓存所访问过的资源。通过提供一个头信息指出客户端希望只返回在指定日期之后修改的资源
      * 304状态码或许不应该认为是一种错误，而是对客户端有缓存情况下服务端的一种响应。
      */
-    public static HashMap<String, String> ModifiedTime = new HashMap<>();
+    private static HashMap<String, String> ModifiedTime = new HashMap<>();
 
     public StaticResourceService() {
     }
