@@ -10,9 +10,10 @@ import com.nju.HttpClient.Components.Response.HttpResponse;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 
-public class Test200 {
+public class TestCode200 {
 
     Client client;
 
@@ -21,6 +22,10 @@ public class Test200 {
     @Before
     public void before() {
         client = new Client();
+        File file = new File(path);
+        if (!file.isDirectory()) {
+            file.mkdir();
+        }
     }
 
     /**

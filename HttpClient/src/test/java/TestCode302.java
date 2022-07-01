@@ -9,44 +9,54 @@ import com.nju.HttpClient.Components.Response.HttpResponse;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 
-public class Test304 {
+public class TestCode302 {
     private Client client;
-
     private final String path = "src/main/resources/ResponseResources/";
 
     @Before
     public void setUp() {
         client = new Client();
+        File file = new File(path);
+        if (!file.isDirectory()) {
+            file.mkdir();
+        }
     }
 
-    private void sendRequest(String host, String path, String savePath) throws IOException {
+    private void sendRequest(String path,String savePath) throws IOException {
         RequestLine requestLine = new RequestLine(Method.GET, path);
         MessageHeader messageHeader = new MessageHeader();
-        messageHeader.putField(HeaderFields.Host, host);
+        messageHeader.putField(HeaderFields.Host, "localhost:5000");
         messageHeader.putField(HeaderFields.Connection, "keep-alive");
         MessageEntityBody body = new MessageEntityBody();
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, body);
         HttpResponse httpResponse = client.sendRequest(httpRequest);
-
         if (savePath != null) {
             try {
                 httpResponse.saveBody(savePath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        } else {
-            System.out.println(httpResponse);
         }
     }
 
-
     @Test
     public void test1() throws IOException {
-        sendRequest("localhost:5000", "/style.css", path + "style.css");
-        sendRequest("localhost:5000", "/style.css", path + "style.css");
+        sendRequest("/movedIndex2.html",path + "movedIndex2.html");
+        sendRequest("/movedIndex2.html",path + "movedIndex2.html");
     }
 
+    @Test
+    public void test2() throws IOException {
+        sendRequest("/movedPic2.png",path + "movedPic2.png");
+        sendRequest("/movedPic2.png",path + "movedPic2.png");
+    }
 
+    @Test
+    public void test3() throws IOException {
+        sendRequest("/movedPic2.jpg",path + "movedPic2.jpg");
+        sendRequest("/movedPic2.jpg",path + "movedPic2.jpg");
+    }
 }

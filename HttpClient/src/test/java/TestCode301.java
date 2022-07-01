@@ -9,9 +9,10 @@ import com.nju.HttpClient.Components.Response.HttpResponse;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 
-public class Test404 {
+public class TestCode301 {
     private Client client;
 
     private final String path = "src/main/resources/ResponseResources/";
@@ -19,9 +20,13 @@ public class Test404 {
     @Before
     public void setUp() {
         client = new Client();
+        File file = new File(path);
+        if (!file.isDirectory()) {
+            file.mkdir();
+        }
     }
 
-    private void sendRequest(String path, String savePath) throws IOException {
+    private void sendRequest(String path, String savePath) {
         RequestLine requestLine = new RequestLine(Method.GET, path);
         MessageHeader messageHeader = new MessageHeader();
         messageHeader.putField(HeaderFields.Host, "localhost:5000");
@@ -31,21 +36,22 @@ public class Test404 {
         HttpResponse httpResponse = client.sendRequest(httpRequest);
         if (savePath != null) {
             try {
-                httpResponse.saveBody(savePath);
+                httpRequest.getRequestEntityBody().save(savePath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        } else {
-            System.out.println(httpResponse);
         }
     }
 
     @Test
     public void test1() {
-        try {
-            sendRequest("/hello.html", path + "hello.html");
-        } catch (Exception e) {
-            System.out.println("error 404");
-        }
+        sendRequest("/movedIndex.html", path + "movedIndex.html");
+        sendRequest("/movedIndex.html", path + "movedIndex.html");
+    }
+
+    @Test
+    public void test2() {
+        sendRequest("/movedPic.png", path + "movedPic.png");
+        sendRequest("/movedPic.png", path + "movedPic.png");
     }
 }

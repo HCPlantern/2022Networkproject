@@ -9,9 +9,10 @@ import com.nju.HttpClient.Components.Response.HttpResponse;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 
-public class Test405 {
+public class TestCode304 {
     private Client client;
 
     private final String path = "src/main/resources/ResponseResources/";
@@ -19,12 +20,16 @@ public class Test405 {
     @Before
     public void setUp() {
         client = new Client();
+        File file = new File(path);
+        if (!file.isDirectory()) {
+            file.mkdir();
+        }
     }
 
-    private void sendRequest(String path, String savePath) throws IOException {
-        RequestLine requestLine = new RequestLine(Method.POST, path);
+    private void sendRequest(String host, String path, String savePath) throws IOException {
+        RequestLine requestLine = new RequestLine(Method.GET, path);
         MessageHeader messageHeader = new MessageHeader();
-        messageHeader.putField(HeaderFields.Host, "localhost:5000");
+        messageHeader.putField(HeaderFields.Host, host);
         messageHeader.putField(HeaderFields.Connection, "keep-alive");
         MessageEntityBody body = new MessageEntityBody();
         HttpRequest httpRequest = new HttpRequest(requestLine, messageHeader, body);
@@ -41,12 +46,12 @@ public class Test405 {
         }
     }
 
+
     @Test
-    public void test1() {
-        try {
-            sendRequest("/style.css", path + "style.css");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void test1() throws IOException {
+        sendRequest("localhost:5000", "/style.css", path + "style.css");
+        sendRequest("localhost:5000", "/style.css", path + "style.css");
     }
+
+
 }

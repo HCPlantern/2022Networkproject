@@ -9,19 +9,24 @@ import com.nju.HttpClient.Components.Response.HttpResponse;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 
-public class Test301 {
+public class TestCode500 {
+
     private Client client;
 
     private final String path = "src/main/resources/ResponseResources/";
-
     @Before
     public void setUp() {
         client = new Client();
+        File file = new File(path);
+        if (!file.isDirectory()) {
+            file.mkdir();
+        }
     }
 
-    private void sendRequest(String path, String savePath) {
+    private void sendRequest(String path,String savePath) throws IOException {
         RequestLine requestLine = new RequestLine(Method.GET, path);
         MessageHeader messageHeader = new MessageHeader();
         messageHeader.putField(HeaderFields.Host, "localhost:5000");
@@ -31,7 +36,7 @@ public class Test301 {
         HttpResponse httpResponse = client.sendRequest(httpRequest);
         if (savePath != null) {
             try {
-                httpRequest.getRequestEntityBody().save(savePath);
+                httpResponse.saveBody(savePath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -40,13 +45,10 @@ public class Test301 {
 
     @Test
     public void test1() {
-        sendRequest("/movedIndex.html", path + "movedIndex.html");
-        sendRequest("/movedIndex.html", path + "movedIndex.html");
-    }
-
-    @Test
-    public void test2() {
-        sendRequest("/movedPic.png", path + "movedPic.png");
-        sendRequest("/movedPic.png", path + "movedPic.png");
+        try {
+            sendRequest("/error",null);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }
