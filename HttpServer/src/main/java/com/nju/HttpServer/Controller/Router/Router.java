@@ -18,6 +18,10 @@ import java.util.Map;
  * 负责注册要匹配的方法，调用匹配的方法
  **/
 public class Router {
+
+    /**
+     * 内部类Action, 保存类及其包含的方法，用于反射执行
+     */
     private class Action {
         private Object object;
         private Method method;

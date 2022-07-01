@@ -9,8 +9,9 @@ import java.util.HashMap;
 import java.util.TimerTask;
 
 /**
- * 对一个channel处理keepAlive
- * 体现为定时关闭channel
+ * 对一个channel处理keepAlive.
+ * 体现为定时关闭channel.
+ * 使用TimerTask实现channel的定时关闭，使用HashMap确保每个channel的TimerTask是唯一的、最新的。
  **/
 public class KeepAliveHandler {
     private static Logger logger = LogManager.getLogger(KeepAliveHandler.class);
